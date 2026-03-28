@@ -1,0 +1,2238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Marthinha Sol</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --gold:#C9A96E;--gold2:#E8D5B0;--gold3:#7A5C2E;
+  --ink:#1A1714;--ink2:#4A4540;--ink3:#8C857D;
+  --bg:#F7F4F0;--bg2:#EFEBE4;--bg3:#E5DDD3;
+  --white:#FFFFFF;
+  --border:#DDD6CC;--border2:#C8BFB3;
+  --red:#B0341E;--red-bg:#FBF0EE;
+  --amber:#956010;--amber-bg:#FDF5E8;
+  --green:#1D6840;--green-bg:#EBF5F0;
+  --blue:#1A4A88;--blue-bg:#EDF2FB;
+  --r:12px;--r-sm:8px;--r-lg:16px;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 12px rgba(0,0,0,.05);
+  --shadow-lg:0 4px 24px rgba(0,0,0,.12);
+  --nav-h:64px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:14px;line-height:1.5;overscroll-behavior:none}
+
+/* ─── TOPBAR ─── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:var(--ink);
+  height:56px;display:flex;align-items:center;padding:0 1rem;gap:12px;
+  box-shadow:0 2px 12px rgba(0,0,0,.25);
+}
+.topbar-logo{
+  width:32px;height:32px;border-radius:8px;background:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:13px;font-weight:600;color:var(--ink);
+  flex-shrink:0;
+}
+.topbar-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:500;color:#fff}
+.topbar-date{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.alert-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--red);
+  border:2px solid var(--ink);display:none;
+}
+
+/* ─── BOTTOM NAV ─── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:var(--ink);
+  height:var(--nav-h);
+  display:flex;align-items:stretch;
+  box-shadow:0 -2px 12px rgba(0,0,0,.25);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-tab{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  background:none;border:none;cursor:pointer;color:rgba(255,255,255,.4);
+  font-family:'Outfit',sans-serif;font-size:10px;letter-spacing:.3px;
+  transition:color .2s;padding:8px 4px;position:relative;
+}
+.nav-tab svg{width:20px;height:20px;flex-shrink:0}
+.nav-tab.active{color:var(--gold)}
+.nav-tab.active::after{
+  content:'';position:absolute;top:0;left:20%;right:20%;height:2px;
+  background:var(--gold);border-radius:0 0 2px 2px;
+}
+.nav-badge{
+  position:absolute;top:6px;right:calc(50% - 16px);
+  width:16px;height:16px;border-radius:99px;
+  background:var(--red);color:#fff;font-size:9px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid var(--ink);
+}
+
+/* ─── CONTENT ─── */
+.content{
+  padding-top:56px;padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom) + 8px);
+  min-height:100vh;
+}
+.page{display:none;padding:1rem}
+.page.active{display:block}
+
+/* ─── SECTION HEADER ─── */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.sec-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:500;color:var(--ink)}
+.sec-sub{font-size:12px;color:var(--ink3);margin-top:1px}
+
+/* ─── METRICS ─── */
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1rem}
+.metric{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:1rem;box-shadow:var(--shadow);
+}
+.metric-label{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.metric-val{font-family:'Playfair Display',serif;font-size:26px;font-weight:500;color:var(--ink);line-height:1}
+.metric-sub{font-size:11px;color:var(--ink3);margin-top:4px}
+.m-gold .metric-val{color:var(--gold)}
+.m-green .metric-val{color:var(--green)}
+.m-red .metric-val{color:var(--red)}
+
+/* ─── CARDS ─── */
+.card{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  margin-bottom:12px;box-shadow:var(--shadow);overflow:hidden;
+}
+.card-head{
+  padding:.875rem 1rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-title{font-size:14px;font-weight:600;color:var(--ink)}
+.card-body{padding:1rem}
+
+/* ─── ALERTS ─── */
+.alert-bar{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 12px;border-radius:var(--r-sm);font-size:13px;
+  margin-bottom:8px;border-left:3px solid transparent;line-height:1.4;
+}
+.a-r{background:var(--red-bg);color:var(--red);border-left-color:var(--red)}
+.a-a{background:var(--amber-bg);color:var(--amber);border-left-color:#E07A0A}
+.a-g{background:var(--green-bg);color:var(--green);border-left-color:var(--green)}
+.a-b{background:var(--blue-bg);color:var(--blue);border-left-color:var(--blue)}
+.a-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+
+/* ─── PILLS ─── */
+.pill{display:inline-flex;align-items:center;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:500}
+.p-g{background:#D4F0E2;color:#1D6840}
+.p-r{background:#FADDD8;color:#B0341E}
+.p-a{background:#FAECD0;color:#956010}
+.p-b{background:#D8E6FA;color:#1A4A88}
+.p-n{background:var(--bg3);color:var(--ink3)}
+
+/* ─── LIST ITEMS ─── */
+.list-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.list-item:last-child{border-bottom:none}
+.li-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);margin-top:5px;flex-shrink:0}
+.li-title{font-size:13px;font-weight:500;color:var(--ink)}
+.li-meta{font-size:12px;color:var(--ink3);margin-top:1px}
+.li-pend{font-size:12px;color:var(--amber);margin-top:2px}
+
+/* ─── INFO ROWS ─── */
+.irow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+.irow:last-child{border-bottom:none}
+.ik{color:var(--ink3);flex-shrink:0;margin-right:8px}
+.iv{color:var(--ink);text-align:right}
+
+/* ─── AVATARS ─── */
+.av{
+  border-radius:50%;background:var(--bg2);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-weight:600;color:var(--gold);flex-shrink:0;
+}
+
+/* ─── AGENDA / CALENDÁRIO ─── */
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.cal-nav{
+  width:36px;height:36px;border-radius:50%;background:var(--white);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink2);
+  font-size:16px;transition:background .15s;
+}
+.cal-nav:hover{background:var(--bg2)}
+.cal-month{font-family:'Playfair Display',serif;font-size:17px;font-weight:500;color:var(--ink)}
+
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:1rem}
+.cal-day-name{text-align:center;font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;padding:4px 0}
+.cal-day{
+  min-height:36px;border-radius:8px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;cursor:pointer;
+  font-size:13px;color:var(--ink2);transition:all .15s;position:relative;
+  gap:2px;padding:3px;
+}
+.cal-day:hover{background:var(--bg2)}
+.cal-day.today{background:var(--gold);color:var(--ink);font-weight:600}
+.cal-day.has-visit{background:var(--bg2);border:1px solid var(--border2)}
+.cal-day.has-visit .cal-dots{display:flex}
+.cal-day.other-month{color:var(--ink3);opacity:.4}
+.cal-day.selected{background:var(--ink);color:#fff}
+.cal-day.selected.today{background:var(--gold3);color:#fff}
+.cal-dots{display:none;gap:2px;justify-content:center}
+.cal-dot{width:4px;height:4px;border-radius:50%;background:var(--gold)}
+
+.agenda-list{display:flex;flex-direction:column;gap:8px}
+.agenda-item{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:.875rem 1rem;display:flex;align-items:center;gap:12px;
+  box-shadow:var(--shadow);cursor:pointer;transition:all .15s;
+}
+.agenda-item:hover{border-color:var(--gold)}
+.agenda-item.past{opacity:.6}
+.agenda-date-block{
+  min-width:44px;text-align:center;
+  background:var(--bg2);border-radius:var(--r-sm);padding:6px 8px;
+}
+.agenda-dd{font-family:'Playfair Display',serif;font-size:20px;font-weight:500;color:var(--ink);line-height:1}
+.agenda-mm{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px}
+.agenda-info{flex:1;min-width:0}
+.agenda-cliente{font-size:13px;font-weight:500;color:var(--ink)}
+.agenda-amb{font-size:12px;color:var(--ink3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ─── CLIENTES ─── */
+.client-list{display:flex;flex-direction:column;gap:10px;margin-bottom:1rem}
+.client-card{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:1rem;box-shadow:var(--shadow);cursor:pointer;transition:all .15s;
+}
+.client-card:hover{border-color:var(--gold)}
+.client-card.sel{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,169,110,.15)}
+.c-name{font-size:14px;font-weight:600;color:var(--ink)}
+.c-type{font-size:12px;color:var(--ink3)}
+.prog-bar{height:4px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-top:8px}
+.prog-fill{height:100%;background:var(--gold);border-radius:99px;transition:width .4s}
+
+/* ─── FORM ─── */
+.form-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.form-head{padding:1rem;background:var(--ink);display:flex;align-items:center;gap:10px}
+.form-head-icon{font-size:18px}
+.form-head-title{font-family:'Playfair Display',serif;font-size:16px;color:#fff;font-weight:500}
+.form-head-sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px}
+.form-body{padding:1rem}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-weight:500}
+.form-input,.form-select,.form-textarea{
+  width:100%;padding:11px 12px;
+  border:1px solid var(--border2);border-radius:var(--r-sm);
+  font-size:14px;color:var(--ink);background:var(--bg);
+  font-family:'Outfit',sans-serif;transition:border-color .15s,background .15s;
+  -webkit-appearance:none;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{
+  outline:none;border-color:var(--gold);background:var(--white);
+}
+.form-select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238C857D' d='M6 8 0 0h12z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer;
+}
+.form-textarea{resize:vertical;min-height:72px;line-height:1.5}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-row{display:flex;gap:10px;flex-wrap:wrap}
+
+.btn{
+  padding:12px 20px;border:none;border-radius:var(--r-sm);
+  font-size:14px;font-weight:500;cursor:pointer;
+  font-family:'Outfit',sans-serif;transition:all .15s;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.btn-gold{background:var(--gold);color:var(--ink);width:100%}
+.btn-gold:hover{opacity:.88}
+.btn-dark{background:var(--ink);color:#fff}
+.btn-dark:hover{opacity:.85}
+.btn-outline{background:none;border:1px solid var(--border2);color:var(--ink3)}
+.btn-outline:hover{border-color:var(--gold);color:var(--ink)}
+.btn-green{background:var(--green-bg);color:var(--green);border:1px solid #A8D9C0}
+.btn-whats{background:#25D366;color:#fff;width:100%;font-size:13px}
+.btn-whats:hover{opacity:.88}
+.btn-sm{padding:7px 14px;font-size:12px}
+
+/* ─── ASSINATURAS ─── */
+.asn-wrap{padding:12px 0;border-bottom:1px solid var(--border)}
+.asn-wrap:last-child{border-bottom:none}
+.asn-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.asn-name{font-size:13px;font-weight:500;color:var(--ink)}
+.asn-count{font-size:12px;color:var(--ink3)}
+.asn-dots{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:5px}
+.asn-dot{
+  width:18px;height:18px;border-radius:4px;
+  background:var(--bg3);border:1px solid var(--border);
+  transition:all .2s;
+}
+.asn-dot.done{background:var(--gold);border-color:var(--gold3)}
+.asn-dot.today-v{background:var(--blue);border-color:var(--blue)}
+
+/* ─── PAGAMENTO ─── */
+.pag-card{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:1rem;box-shadow:var(--shadow);margin-bottom:10px;
+}
+.pag-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.pag-nome{font-size:14px;font-weight:600;color:var(--ink)}
+.pag-info{font-size:12px;color:var(--ink3);margin-top:2px}
+.pag-actions{display:flex;gap:8px;margin-top:.75rem;flex-wrap:wrap}
+
+.toggle-pago{
+  display:flex;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border2);
+}
+.toggle-opt{
+  flex:1;padding:7px 10px;text-align:center;font-size:12px;font-weight:500;
+  cursor:pointer;border:none;background:var(--bg);color:var(--ink3);font-family:'Outfit',sans-serif;
+  transition:all .15s;
+}
+.toggle-opt.active{background:var(--green);color:#fff}
+.toggle-opt.active.pend{background:var(--red);color:#fff}
+
+/* ─── STARS ─── */
+.stars{color:var(--gold);font-size:13px;letter-spacing:1px}
+
+/* ─── DETAIL PANEL ─── */
+.detail-panel{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:1rem;box-shadow:var(--shadow);margin-top:4px;
+}
+.sec-label{
+  font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;
+  letter-spacing:.7px;margin:14px 0 8px;display:flex;align-items:center;gap:6px;
+}
+
+/* ─── TOAST ─── */
+.toast{
+  position:fixed;bottom:calc(var(--nav-h) + 12px + env(safe-area-inset-bottom));
+  left:1rem;right:1rem;z-index:999;
+  background:var(--ink);color:#fff;padding:13px 16px;border-radius:var(--r);
+  font-size:13px;display:flex;align-items:center;gap:10px;
+  border-left:3px solid var(--gold);box-shadow:var(--shadow-lg);
+  opacity:0;transform:translateY(8px);pointer-events:none;transition:all .25s;
+}
+.toast.show{opacity:1;transform:translateY(0);pointer-events:auto}
+
+/* ─── MODAL ─── */
+.modal-backdrop{
+  position:fixed;inset:0;z-index:300;
+  background:rgba(26,23,20,.6);backdrop-filter:blur(4px);
+  display:flex;align-items:flex-end;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.modal-backdrop.open{opacity:1;pointer-events:auto}
+.modal{
+  background:var(--white);border-radius:var(--r-lg) var(--r-lg) 0 0;
+  width:100%;max-width:600px;max-height:88vh;overflow-y:auto;
+  padding-bottom:env(safe-area-inset-bottom);
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);
+}
+.modal-backdrop.open .modal{transform:translateY(0)}
+.modal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.25rem;border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:var(--white);z-index:10;
+}
+.modal-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:500;color:var(--ink)}
+.modal-close{
+  width:32px;height:32px;border-radius:50%;background:var(--bg2);border:none;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:16px;color:var(--ink2);transition:background .15s;
+}
+.modal-close:hover{background:var(--bg3)}
+.modal-body{padding:1.25rem}
+
+/* ─── QUICK ADD AGENDA ─── */
+.quick-add{
+  background:var(--ink);border-radius:var(--r);padding:1rem;margin-bottom:1rem;
+  display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;
+}
+.quick-add .form-label{color:rgba(255,255,255,.6)}
+.quick-add .form-input,.quick-add .form-select{
+  background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);
+  color:#fff;
+}
+.quick-add .form-input::placeholder{color:rgba(255,255,255,.35)}
+.quick-add .form-input:focus,.quick-add .form-select:focus{
+  background:rgba(255,255,255,.15);border-color:var(--gold);
+}
+.quick-add .form-select option{background:var(--ink);color:#fff}
+
+/* ─── WHATS PREVIEW ─── */
+.whats-preview{
+  background:#ECF7EE;border:1px solid #B8E0C0;border-radius:var(--r);
+  padding:1rem;margin-bottom:10px;
+}
+.whats-bubble{
+  background:#fff;border-radius:12px 12px 12px 0;padding:10px 12px;
+  font-size:13px;line-height:1.6;color:var(--ink);white-space:pre-wrap;
+  box-shadow:0 1px 3px rgba(0,0,0,.08);max-width:90%;
+}
+.whats-label{font-size:10px;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+
+/* ─── RESPONSIVE desktop ─── */
+@media(min-width:768px){
+  .metrics{grid-template-columns:repeat(4,1fr)}
+  .form-grid{grid-template-columns:1fr 1fr}
+  .page{padding:1.5rem;max-width:800px;margin:0 auto}
+  .modal{border-radius:var(--r-lg);margin:auto;max-height:80vh}
+  .modal-backdrop{align-items:center}
+  .bottom-nav{max-width:800px;left:50%;transform:translateX(-50%);border-radius:var(--r-lg) var(--r-lg) 0 0}
+  .topbar{max-width:800px;left:50%;transform:translateX(-50%);border-radius:0 0 var(--r) var(--r)}
+  .toast{max-width:760px;left:50%;transform:translateX(-50%) translateY(8px)}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+}
+
+@media(min-width:1024px){
+  .page{max-width:960px}
+  .bottom-nav{max-width:960px}
+  .topbar{max-width:960px}
+}
+
+/* ─── PACOTE PAGO CARDS ─── */
+.pac-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--r);padding:1rem;margin-bottom:10px;
+  box-shadow:var(--shadow);
+}
+.pac-card.pago{border-left:4px solid var(--green)}
+.pac-card.pendente{border-left:4px solid var(--border2)}
+.pac-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:.75rem}
+.pac-nome{font-size:14px;font-weight:500;color:var(--ink)}
+.pac-tipo{font-size:11px;color:var(--ink3);margin-top:1px}
+.pac-body{font-size:12px;color:var(--ink3);line-height:1.7}
+.pac-valor{font-family:'Playfair Display',serif;font-size:20px;font-weight:500}
+.pac-valor.pago{color:var(--green)}
+.pac-valor.pend{color:var(--ink3)}
+.pac-progresso{margin-top:10px}
+.pac-prog-label{display:flex;justify-content:space-between;font-size:11px;color:var(--ink3);margin-bottom:4px}
+.gold-bg{background:var(--gold-bg)}
+
+.ag-item{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  margin-bottom:8px;box-shadow:var(--shadow);overflow:hidden;
+}
+.ag-item-head{
+  display:flex;align-items:center;gap:12px;padding:.875rem 1rem;cursor:pointer;
+  transition:background .15s;
+}
+.ag-item-head:hover{background:var(--bg)}
+.ag-item-head.status-realizada{border-left:4px solid var(--green)}
+.ag-item-head.status-reagendada{border-left:4px solid var(--blue)}
+.ag-item-head.status-agendada{border-left:4px solid var(--gold)}
+.ag-date-block{
+  min-width:42px;text-align:center;border-radius:var(--r-sm);padding:5px 4px;flex-shrink:0;
+}
+.ag-date-block.s-ag{background:#FDF5E8}
+.ag-date-block.s-ok{background:var(--green-bg)}
+.ag-date-block.s-re{background:var(--blue-bg)}
+.ag-dd{font-family:'Playfair Display',serif;font-size:20px;font-weight:500;line-height:1}
+.ag-date-block.s-ag .ag-dd{color:var(--amber)}
+.ag-date-block.s-ok .ag-dd{color:var(--green)}
+.ag-date-block.s-re .ag-dd{color:var(--blue)}
+.ag-mm{font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--ink3)}
+.ag-nome{font-size:13px;font-weight:500;color:var(--ink)}
+.ag-meta{font-size:12px;color:var(--ink3);margin-top:1px}
+.ag-actions{
+  padding:.875rem 1rem 1rem;border-top:1px solid var(--border);
+  background:var(--bg);display:none;
+}
+.ag-actions.open{display:block}
+.status-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.status-btn{
+  padding:10px 12px;border-radius:var(--r-sm);border:1.5px solid transparent;
+  cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;
+  display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;
+}
+.status-btn-realizada{background:var(--green-bg);color:var(--green);border-color:#A8D9C0}
+.status-btn-realizada:hover,.status-btn-realizada.ativo{background:var(--green);color:#fff;border-color:var(--green)}
+.status-btn-reagendada{background:var(--blue-bg);color:var(--blue);border-color:#A8C8F0}
+.status-btn-reagendada:hover,.status-btn-reagendada.ativo{background:var(--blue);color:#fff;border-color:var(--blue)}
+.reagendar-panel{
+  background:var(--white);border:1px solid var(--border2);border-radius:var(--r-sm);
+  padding:.875rem;margin-top:8px;display:none;
+}
+.reagendar-panel.open{display:block}
+.cal-day.has-realizada{background:#EBF5F0 !important;border:1px solid #A8D9C0}
+.cal-day.has-realizada .cal-dot{background:var(--green) !important}
+.cal-day.has-reagendada{background:var(--blue-bg) !important;border:1px solid #A8C8F0}
+.cal-day.has-reagendada .cal-dot{background:var(--blue) !important}
+.cal-day.has-agendada{background:#FDF5E8;border:1px solid #E8C87A}
+.cal-day.has-agendada .cal-dots{display:flex}
+.cal-day.multi-dot .cal-dots{display:flex}
+/* ─── FIM AGENDA MELHORADA ─── */
+
+.p-hero{
+  background:var(--ink);border-radius:var(--r);padding:1.25rem 1.5rem;
+  margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.p-hero-label{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px}
+.p-hero-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:500;color:#fff;line-height:1.1}
+.p-hero-date{font-size:12px;color:rgba(255,255,255,.45);margin-top:4px}
+.p-hero-logo{
+  width:48px;height:48px;border-radius:12px;background:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--ink);flex-shrink:0;
+}
+.p-sec-label{
+  font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;
+  margin:0 0 8px;display:flex;align-items:center;gap:8px;
+}
+.p-sec-label::after{content:'';flex:1;height:0.5px;background:var(--border)}
+.p-two-col{display:flex;flex-direction:column;gap:0}
+.p-fin-wide{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:1rem 1.25rem;display:flex;align-items:center;gap:20px;box-shadow:var(--shadow);
+}
+.p-fin-left{flex:1}
+.p-fin-bars{flex:1;display:flex;flex-direction:column;gap:7px}
+.fin-bar-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink3)}
+.fin-bar-track{flex:1;height:6px;background:var(--bg3);border-radius:99px;overflow:hidden}
+.fin-bar-fill{height:100%;border-radius:99px;transition:width .6s}
+.p-vc{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:.875rem 1rem;margin-bottom:8px;display:flex;align-items:center;gap:12px;
+  box-shadow:var(--shadow);
+}
+.p-vc-date{min-width:42px;text-align:center;background:var(--bg2);border-radius:var(--r-sm);padding:6px 4px}
+.p-vc-date.urgente{background:#FBF0EE}
+.p-vc-date.isHoje{background:#EDF2FB}
+.p-vc-dd{font-family:'Playfair Display',serif;font-size:20px;font-weight:500;color:var(--ink);line-height:1}
+.p-vc-date.urgente .p-vc-dd{color:var(--red)}
+.p-vc-date.isHoje .p-vc-dd{color:var(--blue)}
+.p-vc-mm{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px}
+.p-vc-nome{font-size:13px;font-weight:500;color:var(--ink)}
+.p-vc-meta{font-size:12px;color:var(--ink3);margin-top:1px}
+.p-pend-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.p-pend-item:last-child{border-bottom:none}
+.p-pend-dot{width:7px;height:7px;border-radius:50%;background:var(--amber);margin-top:5px;flex-shrink:0}
+.p-asn-item{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--r);
+  padding:.875rem 1rem;margin-bottom:8px;box-shadow:var(--shadow);
+}
+.p-asn-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.p-asn-name{font-size:13px;font-weight:500;color:var(--ink)}
+.p-asn-frac{font-size:12px;color:var(--ink3)}
+.p-asn-dots{display:flex;gap:3px;flex-wrap:wrap;margin-bottom:5px}
+.p-dot{width:18px;height:18px;border-radius:4px;background:var(--bg3);border:1px solid var(--border)}
+.p-dot.d{background:var(--gold);border-color:var(--gold3)}
+.p-pag-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px}
+.p-pag-item:last-child{border-bottom:none}
+.p-pag-nome{font-weight:500;color:var(--ink)}
+.p-pag-sub{font-size:11px;color:var(--ink3)}
+.p-pag-val{font-weight:500;color:var(--red);flex-shrink:0;font-size:13px}
+.mc-trend{font-size:11px;padding:3px 8px;border-radius:99px;font-weight:500}
+.trend-up{background:var(--green-bg);color:var(--green)}
+.trend-ok{background:var(--bg2);color:var(--ink3)}
+.mc-row-inline{display:flex;align-items:center;justify-content:space-between;gap:8px}
+@media(min-width:640px){
+  .p-two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .p-fin-wide{flex-direction:row}
+}
+@media(max-width:639px){
+  .p-fin-wide{flex-direction:column;gap:12px}
+  .p-fin-bars{width:100%}
+}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+
+/* ─── Print ─── */
+@media print{
+  .topbar,.bottom-nav,.btn-whats,.btn,.modal-backdrop{display:none!important}
+  .content{padding:0}
+  .page.active{padding:0}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-logo">MS</div>
+  <div>
+    <div class="topbar-name">Marthinha Sol</div>
+    <div class="topbar-date" id="topbar-date"></div>
+  </div>
+  <div class="topbar-right">
+    <div class="alert-dot" id="alert-dot"></div>
+  </div>
+</header>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-tab active" onclick="go('painel',this)" id="tab-painel">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+    Painel
+    <div class="nav-badge" id="nb-alert" style="display:none">0</div>
+  </button>
+  <button class="nav-tab" onclick="go('agenda',this)" id="tab-agenda">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Agenda
+  </button>
+  <button class="nav-tab" onclick="go('visita',this)" id="tab-visita">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    Registrar
+  </button>
+  <button class="nav-tab" onclick="go('clientes',this)" id="tab-clientes">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><path d="M16 3.13a4 4 0 010 7.75M21 21v-2a4 4 0 00-3-3.87"/></svg>
+    Clientes
+  </button>
+  <button class="nav-tab" onclick="go('financeiro',this)" id="tab-financeiro">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+    Pagamentos
+  </button>
+</nav>
+
+<div class="content">
+
+<!-- ══ PAINEL ══ -->
+<div class="page active" id="page-painel">
+
+  <!-- Hero -->
+  <div class="p-hero">
+    <div>
+      <div class="p-hero-label">Bem-vinda de volta</div>
+      <div class="p-hero-name">Marthinha Sol</div>
+      <div class="p-hero-date" id="painel-sub"></div>
+    </div>
+    <div class="p-hero-logo">MS</div>
+  </div>
+
+  <!-- Alertas de visita apenas -->
+  <div id="p-alerts"></div>
+
+  <!-- Métricas -->
+  <div class="metrics" id="p-metrics"></div>
+
+  <!-- Próximas visitas — destaque principal -->
+  <div class="p-sec-label">Próximas visitas agendadas</div>
+  <div id="p-proximas" style="margin-bottom:4px"></div>
+
+  <!-- Grid 2 col -->
+  <div class="p-two-col" style="margin-top:16px">
+    <div>
+      <div class="p-sec-label">Assinaturas — uso do pacote</div>
+      <div id="p-asn"></div>
+    </div>
+    <div>
+      <div class="p-sec-label">Pendências em aberto</div>
+      <div class="card" style="padding:0 1rem"><div id="p-pends" style="padding:.25rem 0"></div></div>
+      <div class="p-sec-label" style="margin-top:16px">Pagamentos pendentes</div>
+      <div class="card" style="padding:0 1rem"><div id="p-pags-open" style="padding:.25rem 0"></div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ AGENDA ══ -->
+<div class="page" id="page-agenda">
+
+  <!-- Quick add strip -->
+  <div class="quick-add">
+    <div class="form-group" style="flex:1;min-width:130px;margin:0">
+      <label class="form-label">Cliente</label>
+      <select class="form-select" id="qa-cli"></select>
+    </div>
+    <div class="form-group" style="flex:1;min-width:120px;margin:0">
+      <label class="form-label">Data</label>
+      <input type="date" class="form-input" id="qa-data">
+    </div>
+    <div class="form-group" style="min-width:100px;margin:0">
+      <label class="form-label">Horário</label>
+      <input type="time" class="form-input" id="qa-hora" value="08:00">
+    </div>
+    <div style="align-self:flex-end">
+      <button class="btn btn-gold" onclick="agendarVisita()" style="height:44px;padding:0 16px;width:auto;white-space:nowrap">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Agendar
+      </button>
+    </div>
+  </div>
+
+  <!-- Calendário -->
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-head" style="padding:.75rem 1rem">
+      <button class="cal-nav" onclick="calPrev()">‹</button>
+      <div class="cal-month" id="cal-month-label"></div>
+      <button class="cal-nav" onclick="calNext()">›</button>
+    </div>
+    <!-- Legenda -->
+    <div style="display:flex;gap:14px;padding:.5rem 1rem;border-bottom:1px solid var(--border);flex-wrap:wrap">
+      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink3)">
+        <span style="width:10px;height:10px;border-radius:2px;background:var(--gold);display:inline-block"></span>Agendada
+      </span>
+      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink3)">
+        <span style="width:10px;height:10px;border-radius:2px;background:var(--green);display:inline-block"></span>Realizada
+      </span>
+      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink3)">
+        <span style="width:10px;height:10px;border-radius:2px;background:var(--blue);display:inline-block"></span>Reagendada
+      </span>
+      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink3)">
+        <span style="width:10px;height:10px;border-radius:50%;background:var(--gold);border:2px solid var(--gold3);display:inline-block"></span>Hoje
+      </span>
+    </div>
+    <div style="padding:.75rem">
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+  </div>
+
+  <!-- Lista do mês selecionado -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <div class="p-sec-label" style="margin:0;flex:1" id="agenda-month-title">Visitas do mês</div>
+  </div>
+  <div id="agenda-list"></div>
+</div>
+
+<!-- ══ REGISTRAR VISITA ══ -->
+<div class="page" id="page-visita">
+  <div class="sec-head">
+    <div><div class="sec-title">Registrar visita</div><div class="sec-sub">Histórico detalhado de cada atendimento</div></div>
+  </div>
+
+  <!-- Selector de cliente com info do tipo -->
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-body" style="padding:.875rem 1rem">
+      <div class="form-grid">
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Cliente</label>
+          <select class="form-select" id="fv-cli" onchange="onCliChange()"></select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Data da visita</label>
+          <input type="date" class="form-input" id="fv-data">
+        </div>
+      </div>
+      <!-- Info do cliente selecionado -->
+      <div id="fv-cli-info" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <!-- Serviços realizados (dinâmico) -->
+  <div class="form-card" style="margin-bottom:12px">
+    <div class="form-head">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:rgba(255,255,255,.7)"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+      <div>
+        <div class="form-head-title">Serviços realizados</div>
+        <div class="form-head-sub">Adicione cada ambiente atendido com descrição</div>
+      </div>
+      <button onclick="addServico()" style="margin-left:auto;background:rgba(255,255,255,.15);border:none;color:#fff;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-family:'Outfit',sans-serif">+ Ambiente</button>
+    </div>
+    <div class="form-body" style="padding:.75rem">
+      <div id="fv-servicos"></div>
+    </div>
+  </div>
+
+  <!-- Mofim vendido nesta visita -->
+  <div class="form-card" style="margin-bottom:12px">
+    <div class="form-head" style="background:#2D4A1E">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:rgba(255,255,255,.7)"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+      <div>
+        <div class="form-head-title">Mofim vendido nesta visita</div>
+        <div class="form-head-sub">R$ 150,00 por caixa · deixe em branco se não vendeu</div>
+      </div>
+    </div>
+    <div class="form-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Quantidade de caixas</label>
+          <input type="number" class="form-input" id="fv-mofim-qtd" min="0" max="99" placeholder="0" oninput="calcMofim()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Valor total</label>
+          <input type="text" class="form-input" id="fv-mofim-valor" placeholder="R$ 0,00" readonly style="background:var(--bg2);color:var(--green);font-weight:500">
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Status do pagamento do Mofim</label>
+        <div class="toggle-pago" style="max-width:240px">
+          <button class="toggle-opt active" id="mofim-pago-btn" onclick="setMofimPago(true)">Já pago</button>
+          <button class="toggle-opt pend" id="mofim-pend-btn" onclick="setMofimPago(false)">A receber</button>
+        </div>
+      </div>
+    </div>
+  </div>
+    <div class="form-head">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:rgba(255,255,255,.7)"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div>
+        <div class="form-head-title">Informações gerais</div>
+        <div class="form-head-sub">Resumo e avaliação da visita</div>
+      </div>
+    </div>
+    <div class="form-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Horas trabalhadas</label>
+          <input type="number" class="form-input" id="fv-h" min="1" max="16" placeholder="ex: 3">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Satisfação da cliente</label>
+          <select class="form-select" id="fv-sat">
+            <option value="5">⭐⭐⭐⭐⭐ Excelente</option>
+            <option value="4">⭐⭐⭐⭐ Muito bom</option>
+            <option value="3">⭐⭐⭐ Bom</option>
+            <option value="2">⭐⭐ Regular</option>
+            <option value="1">⭐ Ruim</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Objetivo geral da visita</label>
+        <input type="text" class="form-input" id="fv-obj" placeholder="ex: Reorganização completa do closet principal">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pendências / próximos passos</label>
+        <textarea class="form-textarea" id="fv-pend" placeholder="O que ficou para resolver na próxima visita..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Desafios encontrados</label>
+        <input type="text" class="form-input" id="fv-des" placeholder="ex: Volume alto de roupas acumuladas">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Link das fotos (Google Drive)</label>
+        <input type="text" class="form-input" id="fv-foto" placeholder="https://drive.google.com/...">
+      </div>
+      <button class="btn btn-gold" onclick="salvarVisita()">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Salvar visita no histórico
+      </button>
+      <button class="btn btn-outline" onclick="limparForm()" style="margin-top:8px;width:100%">Limpar formulário</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CLIENTES ══ -->
+<div class="page" id="page-clientes">
+  <div class="sec-head">
+    <div><div class="sec-title">Clientes</div></div>
+    <button class="btn btn-dark btn-sm" onclick="openModal('modal-new-client')">+ Novo</button>
+  </div>
+  <div class="client-list" id="cl-list"></div>
+  <div id="cl-detail"></div>
+</div>
+
+<!-- ══ FINANCEIRO / PAGAMENTOS ══ -->
+<div class="page" id="page-financeiro">
+  <div class="sec-head">
+    <div><div class="sec-title">Pagamentos</div></div>
+  </div>
+  <div class="metrics" id="fin-metrics"></div>
+
+  <!-- Assinantes — pagamento do pacote anual -->
+  <div class="p-sec-label">Assinantes — pacote anual</div>
+  <div id="fin-assinantes"></div>
+
+  <!-- Clientes avulsos / mensalidades -->
+  <div class="p-sec-label" style="margin-top:16px">Mensalidades e avulsos</div>
+  <div class="card">
+    <div class="card-body" id="fin-list"></div>
+  </div>
+
+  <!-- WhatsApp -->
+  <div class="card" style="margin-top:4px">
+    <div class="card-head"><div class="card-title">Enviar via WhatsApp</div></div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Cliente</label>
+          <select class="form-select" id="wa-cli" onchange="previewWA()"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo de mensagem</label>
+          <select class="form-select" id="wa-tipo" onchange="previewWA()">
+            <option value="cobranca">Cobrança / lembrete</option>
+            <option value="resumo">Resumo da visita</option>
+            <option value="agendamento">Confirmação de agendamento</option>
+            <option value="motivacional">Mensagem de cuidado</option>
+          </select>
+        </div>
+      </div>
+      <div class="whats-preview">
+        <div class="whats-label">✓ Pré-visualização</div>
+        <div class="whats-bubble" id="wa-preview">Selecione um cliente.</div>
+      </div>
+      <button class="btn btn-whats" onclick="enviarWA()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Abrir no WhatsApp
+      </button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<!-- ══ MODAL: PAGAMENTO DO PACOTE ══ -->
+<div class="modal-backdrop" id="modal-pacote-pag" onclick="closeModalBg(event,'modal-pacote-pag')">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="pp-modal-title">Registrar pagamento do pacote</div>
+      <button class="modal-close" onclick="closeModal('modal-pacote-pag')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="pp-cid">
+      <div style="background:var(--gold-bg);border:1px solid var(--border2);border-radius:var(--r-sm);padding:.875rem;margin-bottom:1rem">
+        <div id="pp-resumo" style="font-size:13px;color:var(--ink3);line-height:1.6"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Valor recebido (R$)</label>
+          <input type="number" class="form-input" id="pp-valor" placeholder="ex: 9360">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Data do pagamento</label>
+          <input type="date" class="form-input" id="pp-data">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Forma de pagamento</label>
+        <select class="form-select" id="pp-forma">
+          <option value="Pix">Pix</option>
+          <option value="Transferência">Transferência bancária</option>
+          <option value="Cartão de crédito">Cartão de crédito</option>
+          <option value="Cartão de débito">Cartão de débito</option>
+          <option value="Dinheiro">Dinheiro</option>
+          <option value="Parcelado">Parcelado</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Observações</label>
+        <input type="text" class="form-input" id="pp-obs" placeholder="ex: Pago em 3x no cartão, NF emitida...">
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-gold" style="flex:1" onclick="salvarPacotePag()">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          Confirmar pagamento
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="limparPacotePag()">Limpar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop" id="modal-new-client" onclick="closeModalBg(event,'modal-new-client')">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Nova cliente</div>
+      <button class="modal-close" onclick="closeModal('modal-new-client')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Nome completo</label>
+        <input type="text" class="form-input" id="nc-nome" placeholder="Nome da cliente">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefone (WhatsApp)</label>
+        <input type="tel" class="form-input" id="nc-tel" placeholder="(92) 9 9999-9999">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo de imóvel</label>
+        <select class="form-select" id="nc-tipo">
+          <option>Apartamento</option>
+          <option>Apartamento cobertura duplex</option>
+          <option>Casa</option>
+          <option>Casa de condomínio</option>
+          <option>Cobertura</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pacote</label>
+        <select class="form-select" id="nc-pacote">
+          <option value="12">12 visitas</option>
+          <option value="6">6 visitas</option>
+          <option value="avulso">Avulso</option>
+        </select>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Valor do pacote</label>
+          <input type="number" class="form-input" id="nc-valor" placeholder="780" value="780">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Data de início</label>
+          <input type="date" class="form-input" id="nc-inicio">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Observações</label>
+        <input type="text" class="form-input" id="nc-obs" placeholder="ex: Prefere manhãs, tem cachorro...">
+      </div>
+      <button class="btn btn-gold" onclick="salvarCliente()">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Cadastrar cliente
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: DETALHE AGENDAMENTO ══ -->
+<div class="modal-backdrop" id="modal-agendamento" onclick="closeModalBg(event,'modal-agendamento')">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="ag-modal-title">Agendamento</div>
+      <button class="modal-close" onclick="closeModal('modal-agendamento')">×</button>
+    </div>
+    <div class="modal-body" id="ag-modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">
+  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toast-msg">Salvo!</span>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// DATABASE
+// ──────────────────────────────────────────────
+let DB = {
+  clientes:[
+    {id:1,nome:'Elisangela Albuquerqye',tel:'92981886000',tipo:'Apartamento cobertura duplex',inicio:'2025-01-14',status:'Ativo',tipoCliente:'assinante',pacote:12,valor:780,obs:'Prefere manhãs',
+      pacotePago:{pago:true,valorTotal:9360,dataPag:'2025-01-14',formaPag:'Pix',obs:'Pagamento integral antecipado'}},
+    {id:2,nome:'Marcia Takeda',         tel:'92994883949',tipo:'Casa',                         inicio:'2025-03-01',status:'Ativo',tipoCliente:'assinante',pacote:12,valor:780,obs:'',
+      pacotePago:{pago:false,valorTotal:0,dataPag:'',formaPag:'',obs:''}},
+    {id:3,nome:'Luciana Oliveira',      tel:'92999021517',tipo:'Apartamento',                  inicio:'2025-05-10',status:'Ativo',tipoCliente:'assinante',pacote:12,valor:780,obs:'',
+      pacotePago:{pago:false,valorTotal:0,dataPag:'',formaPag:'',obs:''}},
+    {id:4,nome:'Adriana Terraza',       tel:'92981121181',tipo:'Casa',                         inicio:'2025-06-01',status:'Ativo',tipoCliente:'assinante',pacote:12,valor:780,obs:'',
+      pacotePago:{pago:false,valorTotal:0,dataPag:'',formaPag:'',obs:''}},
+    {id:5,nome:'Alessandra Azevedo',    tel:'92991524086',tipo:'Casa',                         inicio:'',          status:'Inativo',tipoCliente:'avulso',pacote:0,valor:0,obs:'',
+      pacotePago:null},
+    {id:6,nome:'Karla Portela',         tel:'92981943232',tipo:'Casa',                         inicio:'2025-08-01',status:'Ativo',tipoCliente:'assinante',pacote:12,valor:780,obs:'',
+      pacotePago:{pago:false,valorTotal:0,dataPag:'',formaPag:'',obs:''}}
+  ],
+  visitas:[
+    {id:1,cid:1,data:'2025-01-22',horas:6,sat:5,foto:'',
+      mofim:{qtd:2,valor:300,pago:true},
+      servicos:[
+        {amb:'Closet',desc:'Triagem completa de roupas, organização por categoria e cor'},
+        {amb:'Quarto',desc:'Reorganização de gavetas e criação de sistema de dobras'}
+      ],
+      obj:'Reorganização premium do closet e treinamento de funcionária',
+      des:'Volume alto de peças acumuladas',pend:'Separar sapatos para doação'},
+    {id:2,cid:2,data:'2025-03-15',horas:3,sat:4,foto:'',
+      mofim:null,
+      servicos:[
+        {amb:'Escritório',desc:'Digitalização e triagem de documentos físicos'}
+      ],
+      obj:'Organizar documentos e criar sistema de arquivamento',
+      des:'Excesso de papéis soltos',pend:'Classificar contratos antigos'},
+    {id:3,cid:3,data:'2025-05-20',horas:2,sat:5,foto:'',
+      mofim:{qtd:1,valor:150,pago:true},
+      servicos:[
+        {amb:'Cozinha',desc:'Setorização de armários, organização de utensílios por frequência de uso'}
+      ],
+      obj:'Padronização da cozinha',
+      des:'Falta de categorização',pend:'Comprar organizadores para gavetas'},
+    {id:4,cid:4,data:'2025-06-10',horas:5,sat:5,foto:'',
+      mofim:null,
+      servicos:[
+        {amb:'Quarto casal',desc:'Criação de layout do guarda-roupa e triagem de roupas'},
+        {amb:'Banheiro',desc:'Organização de produtos de higiene e beleza'}
+      ],
+      obj:'Reorganização premium do quarto',
+      des:'Volume alto de roupas',pend:'Avaliar troca do guarda-roupa'},
+    {id:5,cid:5,data:'2025-04-08',horas:3,sat:4,foto:'',
+      mofim:{qtd:3,valor:450,pago:false},
+      servicos:[
+        {amb:'Sala',desc:'Separação de itens para doação, reorganização de móveis'}
+      ],
+      obj:'Redução de acúmulo na sala',
+      des:'Muitos objetos sem uso',pend:'Levar doações para entidade'}
+  ],
+  agenda:[ // {id, cid, data:'YYYY-MM-DD', hora, concluida, status}
+    {id:1,cid:2,data:'2026-02-14',hora:'09:00',concluida:false,status:'agendada'},
+    {id:2,cid:4,data:'2026-02-20',hora:'08:00',concluida:false,status:'agendada'},
+    {id:3,cid:5,data:'2026-02-25',hora:'09:00',concluida:false,status:'agendada'},
+    {id:4,cid:1,data:'2026-03-10',hora:'08:00',concluida:false,status:'agendada'},
+    {id:5,cid:3,data:'2026-03-18',hora:'10:00',concluida:false,status:'agendada'},
+    {id:6,cid:6,data:'2026-04-05',hora:'08:00',concluida:false,status:'agendada'}
+  ],
+  metas:[
+    {id:1,cid:1,meta:'Closet funcional',pri:'Alta',prazo:'30/03/2026',status:'Em Progresso'},
+    {id:2,cid:2,meta:'Escritório minimalista',pri:'Alta',prazo:'28/02/2026',status:'Em Progresso'},
+    {id:3,cid:3,meta:'Cozinha padronizada',pri:'Média',prazo:'20/02/2026',status:'Concluído'},
+    {id:4,cid:4,meta:'Projeto quarto premium',pri:'Alta',prazo:'10/04/2026',status:'Em Progresso'},
+    {id:5,cid:5,meta:'Redução 40% volume sala',pri:'Alta',prazo:'30/03/2026',status:'Em Progresso'}
+  ],
+  pagamentos:[
+    {id:1,cid:1,mes:'Jan/2026',valor:780,vencimento:'2026-01-10',pago:true,dataPag:'2026-01-08'},
+    {id:2,cid:2,mes:'Jan/2026',valor:780,vencimento:'2026-01-10',pago:true,dataPag:'2026-01-09'},
+    {id:3,cid:3,mes:'Jan/2026',valor:780,vencimento:'2026-01-10',pago:true,dataPag:'2026-01-10'},
+    {id:4,cid:4,mes:'Jan/2026',valor:780,vencimento:'2026-01-10',pago:true,dataPag:'2026-01-11'},
+    {id:5,cid:5,mes:'Jan/2026',valor:780,vencimento:'2026-01-10',pago:false,dataPag:''},
+    {id:6,cid:6,mes:'Jan/2026',valor:780,vencimento:'2026-01-10',pago:true,dataPag:'2026-01-09'},
+    {id:7,cid:1,mes:'Fev/2026',valor:780,vencimento:'2026-02-10',pago:true,dataPag:'2026-02-07'},
+    {id:8,cid:2,mes:'Fev/2026',valor:780,vencimento:'2026-02-10',pago:false,dataPag:''},
+    {id:9,cid:3,mes:'Fev/2026',valor:780,vencimento:'2026-02-10',pago:true,dataPag:'2026-02-10'},
+    {id:10,cid:4,mes:'Fev/2026',valor:780,vencimento:'2026-02-10',pago:false,dataPag:''},
+    {id:11,cid:5,mes:'Fev/2026',valor:780,vencimento:'2026-02-10',pago:false,dataPag:''},
+    {id:12,cid:6,mes:'Fev/2026',valor:780,vencimento:'2026-02-10',pago:true,dataPag:'2026-02-08'},
+    {id:13,cid:1,mes:'Mar/2026',valor:780,vencimento:'2026-03-10',pago:false,dataPag:''},
+    {id:14,cid:2,mes:'Mar/2026',valor:780,vencimento:'2026-03-10',pago:false,dataPag:''},
+    {id:15,cid:3,mes:'Mar/2026',valor:780,vencimento:'2026-03-10',pago:false,dataPag:''},
+    {id:16,cid:4,mes:'Mar/2026',valor:780,vencimento:'2026-03-10',pago:false,dataPag:''},
+    {id:17,cid:6,mes:'Mar/2026',valor:780,vencimento:'2026-03-10',pago:false,dataPag:''}
+  ]
+};
+let nextId={cli:7,visita:6,agenda:7,pag:18};
+
+// ──────────────────────────────────────────────
+// HELPERS
+// ──────────────────────────────────────────────
+const hoje=new Date();
+hoje.setHours(0,0,0,0);
+
+document.getElementById('topbar-date').textContent=hoje.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+document.getElementById('painel-sub').textContent=hoje.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
+
+function ini(n){return n.split(' ').slice(0,2).map(x=>x[0]).join('').toUpperCase()}
+function cNome(id){const c=DB.clientes.find(x=>x.id===id);return c?c.nome:'—'}
+function cTel(id){const c=DB.clientes.find(x=>x.id===id);return c?c.tel:''}
+function pDate(s){if(!s)return null;const[y,m,d]=s.split('-');return new Date(+y,+m-1,+d)}
+function diffD(d){return d?Math.ceil((d-hoje)/864e5):null}
+function stars(n){return'★'.repeat(n)+'☆'.repeat(5-n)}
+function fmt(n){return Number(n).toLocaleString('pt-BR')}
+function fmtDate(s){if(!s)return'—';const d=pDate(s);return d?d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'}):s}
+function fmtDateLong(s){if(!s)return'—';const d=pDate(s);return d?d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}):s}
+
+function showToast(msg,dur=2500){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function closeModalBg(e,id){if(e.target===document.getElementById(id))closeModal(id)}
+
+// ──────────────────────────────────────────────
+// NAVEGAÇÃO
+// ──────────────────────────────────────────────
+const PAGES={painel:renderPainel,agenda:renderAgenda,visita:initForm,clientes:renderClientes,financeiro:renderFinanceiro};
+
+function go(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+  window.scrollTo(0,0);
+  if(PAGES[id])PAGES[id]();
+}
+
+// ──────────────────────────────────────────────
+// PAINEL
+// ──────────────────────────────────────────────
+function renderPainel(){
+  // Data de hoje no hero
+  document.getElementById('painel-sub').textContent=
+    hoje.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
+
+  // ── Alertas: APENAS visitas próximas (sem pagamentos)
+  const alerts=[];
+  DB.agenda.filter(a=>a.status==='agendada'&&!a.concluida).forEach(a=>{
+    const d=pDate(a.data), diff=diffD(d);
+    if(diff===null)return;
+    if(diff===0) alerts.push({t:'b', m:`Visita <strong>hoje</strong> — <strong>${cNome(a.cid)}</strong> às ${a.hora}`});
+    else if(diff===1) alerts.push({t:'a', m:`Visita <strong>amanhã</strong> — <strong>${cNome(a.cid)}</strong> (${fmtDate(a.data)}, ${a.hora})`});
+    else if(diff<=4) alerts.push({t:'a', m:`Visita em <strong>${diff} dias</strong> — <strong>${cNome(a.cid)}</strong> (${fmtDate(a.data)}, ${a.hora})`});
+  });
+  const alertCount=alerts.filter(a=>a.t==='b').length; // só "hoje" conta como urgente no badge
+  const nb=document.getElementById('nb-alert');
+  const dot=document.getElementById('alert-dot');
+  if(alertCount>0){nb.style.display='flex';nb.textContent=alertCount;dot.style.display='block';}
+  else{nb.style.display='none';dot.style.display='none';}
+
+  const alertsEl=document.getElementById('p-alerts');
+  if(alerts.length){
+    const cls={b:'a-b',a:'a-a'};
+    const ico={b:'📅',a:'🗓'};
+    alertsEl.style.marginBottom='12px';
+    alertsEl.innerHTML=alerts.map(a=>
+      `<div class="alert-bar ${cls[a.t]}" style="border-radius:var(--r-sm)"><span class="a-icon" style="font-size:14px">${ico[a.t]}</span><span>${a.m}</span></div>`
+    ).join('');
+  } else {
+    alertsEl.style.marginBottom='0';
+    alertsEl.innerHTML='';
+  }
+
+  // ── Métricas — 4 cards limpos
+  const ativos=DB.clientes.filter(c=>c.status==='Ativo').length;
+  const assinantes=DB.clientes.filter(c=>c.tipoCliente==='assinante'&&c.status==='Ativo').length;
+  const totalV=DB.visitas.length;
+  const totalH=DB.visitas.reduce((s,v)=>s+(+v.horas||0),0);
+  const satArr=DB.visitas.filter(v=>v.sat);
+  const satMedia=satArr.length?(satArr.reduce((s,v)=>s+v.sat,0)/satArr.length).toFixed(1):'—';
+  const proxV=DB.agenda.filter(a=>a.status==='agendada'&&!a.concluida&&diffD(pDate(a.data))>=0).length;
+
+  document.getElementById('p-metrics').style.marginBottom='16px';
+  document.getElementById('p-metrics').innerHTML=`
+    <div class="metric m-gold">
+      <div class="metric-label">Clientes ativas</div>
+      <div class="mc-row-inline">
+        <div class="metric-val">${ativos}</div>
+        <span style="font-size:11px;color:var(--ink3)">${assinantes} assinantes</span>
+      </div>
+      <div class="metric-sub">de ${DB.clientes.length} cadastradas</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Visitas realizadas</div>
+      <div class="mc-row-inline">
+        <div class="metric-val">${totalV}</div>
+        <span class="mc-trend trend-ok">${totalH}h</span>
+      </div>
+      <div class="metric-sub">histórico total</div>
+    </div>
+    <div class="metric m-gold">
+      <div class="metric-label">Satisfação média</div>
+      <div class="mc-row-inline">
+        <div class="metric-val">${satMedia}</div>
+        <span class="mc-trend trend-up">/ 5.0</span>
+      </div>
+      <div class="metric-sub">avaliação das clientes</div>
+    </div>
+    <div class="metric ${proxV>0?'':'m-green'}">
+      <div class="metric-label">Próximas agendadas</div>
+      <div class="mc-row-inline">
+        <div class="metric-val">${proxV}</div>
+        <span class="pill ${proxV>0?'p-a':'p-g'}" style="font-size:10px">${proxV>0?'pendentes':'zerado'}</span>
+      </div>
+      <div class="metric-sub">na agenda</div>
+    </div>`;
+
+  // ── Próximas visitas — visual de cartão rico
+  const MONTHS_S=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const WEEK=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const proxs=DB.agenda
+    .filter(a=>a.status==='agendada'&&!a.concluida)
+    .map(a=>({...a,d:pDate(a.data),diff:diffD(pDate(a.data))}))
+    .filter(a=>a.diff!==null&&a.diff>=0)
+    .sort((a,b)=>a.d-b.d)
+    .slice(0,6);
+
+  const proxEl=document.getElementById('p-proximas');
+  if(!proxs.length){
+    proxEl.innerHTML='<div style="font-size:13px;color:var(--ink3);padding:.75rem 0">Nenhuma visita agendada no momento.</div>';
+  } else {
+    proxEl.innerHTML=proxs.map(a=>{
+      const diff=a.diff, d=a.d;
+      const isHoje=diff===0, isAmanha=diff===1, isUrgente=diff<=2&&diff>0;
+      const accentColor=isHoje?'var(--blue)':isUrgente?'var(--amber)':'var(--gold)';
+      const dayLabel=isHoje?'Hoje':isAmanha?'Amanhã':WEEK[d.getDay()];
+      const pillCls=isHoje?'p-b':isUrgente?'p-a':'p-g';
+      const pillLabel=isHoje?'Hoje':isAmanha?'Amanhã':`${diff}d`;
+      const c=DB.clientes.find(x=>x.id===a.cid)||{};
+      const nVisitas=DB.visitas.filter(v=>v.cid===a.cid).length;
+      const max=c.pacote||12;
+      return`<div class="p-vc" style="border-left:3px solid ${accentColor};gap:14px">
+        <div style="text-align:center;min-width:40px">
+          <div style="font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:1px">${dayLabel}</div>
+          <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:500;color:var(--ink);line-height:1">${d.getDate()}</div>
+          <div style="font-size:10px;color:var(--ink3);text-transform:uppercase">${MONTHS_S[d.getMonth()]}</div>
+        </div>
+        <div style="width:1px;background:var(--border);align-self:stretch;flex-shrink:0"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px">${cNome(a.cid)}</div>
+          <div style="font-size:12px;color:var(--ink3)">${a.hora} · ${c.tipo||''}</div>
+          ${c.tipoCliente==='assinante'?`<div style="font-size:11px;color:var(--ink3);margin-top:3px">${nVisitas}/${max} visitas usadas</div>`:''}
+        </div>
+        <span class="pill ${pillCls}" style="flex-shrink:0">${pillLabel}</span>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Assinaturas — só assinantes ativos
+  const assAtivos=DB.clientes.filter(c=>c.tipoCliente==='assinante'&&c.status==='Ativo');
+  document.getElementById('p-asn').innerHTML=assAtivos.map(c=>{
+    const n=DB.visitas.filter(v=>v.cid===c.id).length;
+    const max=c.pacote||12;
+    const restantes=max-n;
+    const pct=Math.round(n/max*100);
+    const alerta=restantes<=2;
+    let dots='';
+    for(let i=0;i<max;i++) dots+=`<div class="p-dot${i<n?' d':''}"></div>`;
+    return`<div class="p-asn-item" style="${alerta?'border-color:var(--amber)':''}">
+      <div class="p-asn-top">
+        <span class="p-asn-name">${c.nome.split(' ').slice(0,2).join(' ')}</span>
+        <span class="p-asn-frac" style="color:${alerta?'var(--red)':'var(--ink3)'}">${n}/${max}${alerta?` ⚠ ${restantes} rest.`:''}</span>
+      </div>
+      <div class="p-asn-dots">${dots}</div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${alerta?'var(--amber)':'var(--gold)'}"></div></div>
+    </div>`;
+  }).join('');
+
+  // ── Pendências — com ações inline
+  const pends=DB.visitas.filter(v=>v.pend&&v.pend.trim());
+  const pendsEl=document.getElementById('p-pends');
+  if(!pends.length){
+    pendsEl.innerHTML='<div style="font-size:13px;color:var(--ink3);padding:.5rem 0">Sem pendências abertas.</div>';
+  } else {
+    pendsEl.innerHTML=pends.map(v=>`
+      <div class="p-pend-item" id="pend-item-${v.id}">
+        <div class="p-pend-dot" style="margin-top:8px"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:500;color:var(--ink3);margin-bottom:2px">${cNome(v.cid).split(' ').slice(0,2).join(' ')} <span style="font-weight:400">· ${fmtDate(v.data)||'—'}</span></div>
+          <div id="pend-txt-${v.id}" style="font-size:13px;color:var(--amber);line-height:1.4">${v.pend}</div>
+          <div id="pend-edit-${v.id}" style="display:none;margin-top:6px">
+            <textarea style="width:100%;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--r-sm);font-size:13px;font-family:'Outfit',sans-serif;color:var(--ink);background:var(--bg);resize:none;min-height:52px" id="pend-input-${v.id}">${v.pend}</textarea>
+            <div style="display:flex;gap:6px;margin-top:5px">
+              <button onclick="salvarPend(${v.id})" style="padding:5px 12px;background:var(--gold);border:none;border-radius:var(--r-sm);color:var(--ink);font-size:12px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif">Salvar</button>
+              <button onclick="cancelarPend(${v.id})" style="padding:5px 12px;background:none;border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--ink3);font-size:12px;cursor:pointer;font-family:'Outfit',sans-serif">Cancelar</button>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:5px">
+            <button onclick="resolverPend(${v.id})" style="font-size:11px;color:var(--green);background:var(--green-bg);border:1px solid #A8D9C0;border-radius:99px;padding:2px 10px;cursor:pointer;font-family:'Outfit',sans-serif">✓ Resolver</button>
+            <button onclick="editarPend(${v.id})" style="font-size:11px;color:var(--ink3);background:none;border:1px solid var(--border);border-radius:99px;padding:2px 10px;cursor:pointer;font-family:'Outfit',sans-serif">Editar</button>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  // ── Pagamentos pendentes — sem alertas de vencimento, só lista
+  const pagsAberto=DB.pagamentos.filter(p=>!p.pago);
+  document.getElementById('p-pags-open').innerHTML=pagsAberto.length
+    ?pagsAberto.map(p=>`<div class="p-pag-item">
+        <div>
+          <div class="p-pag-nome">${cNome(p.cid).split(' ').slice(0,2).join(' ')}</div>
+          <div class="p-pag-sub">${p.mes}</div>
+        </div>
+        <span class="p-pag-val">R$ ${fmt(p.valor)}</span>
+      </div>`).join('')
+    :'<div style="font-size:13px;color:var(--ink3);padding:.5rem 0">Todos os pagamentos em dia.</div>';
+}
+
+// ──────────────────────────────────────────────
+// AGENDA / CALENDÁRIO
+// ──────────────────────────────────────────────
+let calYear=2026, calMonth=1;
+
+function renderAgenda(){
+  const qasel=document.getElementById('qa-cli');
+  qasel.innerHTML=DB.clientes.map(c=>`<option value="${c.id}">${c.nome.split(' ').slice(0,2).join(' ')}</option>`).join('');
+  // Pre-select nearest future date for quick-add
+  const proxima=DB.agenda
+    .filter(a=>a.status==='agendada')
+    .map(a=>({...a,d:pDate(a.data)}))
+    .filter(a=>a.d&&a.d>=hoje)
+    .sort((a,b)=>a.d-b.d)[0];
+  // If current calYear/calMonth has no visits, jump to nearest month
+  const temNoMes=DB.agenda.some(a=>{
+    const d=pDate(a.data);
+    return d&&d.getFullYear()===calYear&&d.getMonth()===calMonth;
+  });
+  if(!temNoMes&&proxima){
+    calYear=proxima.d.getFullYear();
+    calMonth=proxima.d.getMonth();
+  }
+  document.getElementById('qa-data').value=`${calYear}-${String(calMonth+1).padStart(2,'0')}-01`;
+  renderCal();
+}
+
+const MONTHS_PT=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DAYS_PT=['D','S','T','Q','Q','S','S'];
+
+function calPrev(){if(calMonth>0)calMonth--;else{calYear--;calMonth=11;}renderCal();}
+function calNext(){if(calMonth<11)calMonth++;else{calYear++;calMonth=0;}renderCal();}
+
+function getStatusDia(dateStr){
+  // Returns dominant status for a date: 'realizada' | 'reagendada' | 'agendada' | null
+  const ags=DB.agenda.filter(a=>a.data===dateStr);
+  if(!ags.length)return null;
+  if(ags.some(a=>a.status==='realizada'))return'realizada';
+  if(ags.some(a=>a.status==='reagendada'))return'reagendada';
+  return'agendada';
+}
+
+function renderCal(){
+  document.getElementById('cal-month-label').textContent=`${MONTHS_PT[calMonth]} ${calYear}`;
+  document.getElementById('agenda-month-title').textContent=`${MONTHS_PT[calMonth]} ${calYear}`;
+
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const daysInPrev=new Date(calYear,calMonth,0).getDate();
+
+  let html='';
+  DAYS_PT.forEach(d=>html+=`<div class="cal-day-name">${d}</div>`);
+
+  for(let i=firstDay-1;i>=0;i--){
+    html+=`<div class="cal-day other-month"><span>${daysInPrev-i}</span></div>`;
+  }
+
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=hoje.getFullYear()===calYear&&hoje.getMonth()===calMonth&&hoje.getDate()===d;
+    const ags=DB.agenda.filter(a=>a.data===dateStr);
+    const status=getStatusDia(dateStr);
+    const n=ags.length;
+
+    // Build colored dots per visit
+    let dots='';
+    ags.slice(0,3).forEach(a=>{
+      const dotColor=a.status==='realizada'?'background:var(--green)':a.status==='reagendada'?'background:var(--blue)':'background:var(--gold)';
+      dots+=`<div class="cal-dot" style="${dotColor}"></div>`;
+    });
+
+    // Build name chips for display — show up to 2 names, compact
+    let chips='';
+    const agendadas=ags.filter(a=>a.status!=='reagendada');
+    agendadas.slice(0,2).forEach(a=>{
+      const primeiroNome=cNome(a.cid).split(' ')[0];
+      const chipBg=a.status==='realizada'?'#EBF5F0;color:#1D6840':'#FDF5E8;color:#956010';
+      chips+=`<div style="font-size:9px;background:${chipBg};border-radius:3px;padding:1px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;line-height:1.4">${primeiroNome}</div>`;
+    });
+    if(ags.length>2)chips+=`<div style="font-size:9px;color:var(--ink3)">+${ags.length-2}</div>`;
+
+    const statusCls=status==='realizada'?'has-realizada':status==='reagendada'?'has-reagendada':status==='agendada'?'has-agendada':'';
+
+    html+=`<div class="cal-day${isToday?' today':''}${status?' '+statusCls:''}" onclick="calDayClick('${dateStr}')" style="${n?'min-height:52px;justify-content:flex-start;padding:4px 3px;gap:2px;flex-direction:column;align-items:stretch;':''}">
+      <span style="${n?'font-size:11px;font-weight:600;align-self:flex-end;':''}">${d}</span>
+      ${n?`<div style="display:flex;flex-direction:column;gap:2px;width:100%">${chips}</div>`:`<div class="cal-dots" style="${n?'display:flex':''}">${dots}</div>`}
+    </div>`;
+  }
+
+  const remaining=(7-((firstDay+daysInMonth)%7))%7;
+  for(let d=1;d<=remaining;d++){
+    html+=`<div class="cal-day other-month"><span>${d}</span></div>`;
+  }
+
+  document.getElementById('cal-grid').innerHTML=html;
+  renderAgendaList();
+}
+
+function calDayClick(dateStr){
+  const events=DB.agenda.filter(a=>a.data===dateStr);
+  if(events.length===0){
+    document.getElementById('qa-data').value=dateStr;
+    showToast('Data selecionada. Escolha a cliente e clique em Agendar.');
+    return;
+  }
+  // Scroll to the agenda list item for this day
+  const el=document.getElementById('ag-'+events[0].id);
+  if(el){el.scrollIntoView({behavior:'smooth',block:'center'});toggleAgItem(events[0].id);}
+}
+
+let openAgId=null;
+
+function toggleAgItem(id){
+  if(openAgId&&openAgId!==id){
+    const prev=document.getElementById('agactions-'+openAgId);
+    if(prev)prev.classList.remove('open');
+  }
+  const panel=document.getElementById('agactions-'+id);
+  if(panel){panel.classList.toggle('open');openAgId=panel.classList.contains('open')?id:null;}
+}
+
+function renderAgendaList(){
+  const MONTHS_S=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const agMes=DB.agenda.filter(a=>{
+    const d=pDate(a.data);
+    return d&&d.getFullYear()===calYear&&d.getMonth()===calMonth;
+  }).sort((a,b)=>a.data.localeCompare(b.data));
+
+  if(!agMes.length){
+    document.getElementById('agenda-list').innerHTML=`<div style="font-size:13px;color:var(--ink3);text-align:center;padding:1.5rem 0">Nenhuma visita em ${MONTHS_PT[calMonth]}.</div>`;
+    return;
+  }
+
+  document.getElementById('agenda-list').innerHTML=agMes.map(a=>{
+    const d=pDate(a.data);
+    const dd=d?d.getDate():'—';
+    const mm=d?MONTHS_S[d.getMonth()]:'—';
+    const st=a.status||'agendada';
+    const stLabel=st==='realizada'?'Realizada':st==='reagendada'?'Reagendada':'Agendada';
+    const stPill=st==='realizada'?'p-g':st==='reagendada'?'p-b':'p-a';
+    const headCls=`status-${st}`;
+    const dateCls=st==='realizada'?'s-ok':st==='reagendada'?'s-re':'s-ag';
+    const reagInfo=a.reagendadaPara?`<div style="font-size:11px;color:var(--blue);margin-top:2px">→ Nova data: ${fmtDate(a.reagendadaPara)}</div>`:'';
+
+    return`<div class="ag-item" id="ag-${a.id}">
+      <div class="ag-item-head ${headCls}" onclick="toggleAgItem(${a.id})">
+        <div class="ag-date-block ${dateCls}">
+          <div class="ag-dd">${dd}</div>
+          <div class="ag-mm">${mm}</div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div class="ag-nome">${cNome(a.cid)}</div>
+          <div class="ag-meta">${a.hora}${reagInfo}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="pill ${stPill}">${stLabel}</span>
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--ink3);flex-shrink:0"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="ag-actions" id="agactions-${a.id}">
+        <div style="font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:8px">O que aconteceu com esta visita?</div>
+        <div class="status-btn-row">
+          <button class="status-btn status-btn-realizada${st==='realizada'?' ativo':''}" onclick="marcarStatus(${a.id},'realizada')">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Realizada
+          </button>
+          <button class="status-btn status-btn-reagendada${st==='reagendada'?' ativo':''}" onclick="mostrarReagendar(${a.id})">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Reagendar
+          </button>
+        </div>
+        <div class="reagendar-panel" id="reagpanel-${a.id}">
+          <div style="font-size:12px;color:var(--ink2);font-weight:500;margin-bottom:8px">Nova data para ${cNome(a.cid).split(' ')[0]}:</div>
+          <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap">
+            <div style="flex:1;min-width:120px">
+              <label class="form-label" style="font-size:10px">Nova data</label>
+              <input type="date" class="form-input" id="reag-data-${a.id}" style="font-size:13px">
+            </div>
+            <div style="min-width:90px">
+              <label class="form-label" style="font-size:10px">Horário</label>
+              <input type="time" class="form-input" id="reag-hora-${a.id}" value="${a.hora}" style="font-size:13px">
+            </div>
+            <button class="btn btn-dark btn-sm" style="height:44px;padding:0 14px;white-space:nowrap" onclick="confirmarReagendar(${a.id},${a.cid})">
+              Confirmar
+            </button>
+          </div>
+          <div style="font-size:11px;color:var(--ink3);margin-top:8px">A nova visita será adicionada automaticamente ao calendário.</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+          <button class="btn btn-whats btn-sm" style="flex:1;font-size:12px" onclick="enviarConfirmacaoWA(${a.cid},'${a.data}','${a.hora}')">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            WhatsApp
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="excluirAgenda(${a.id})" style="font-size:12px">Excluir</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function marcarStatus(id, status){
+  const ag=DB.agenda.find(a=>a.id===id);
+  if(!ag)return;
+  ag.status=status;
+  if(status==='realizada')ag.concluida=true;
+  renderCal();
+  renderPainel();
+  showToast(status==='realizada'?'Visita marcada como realizada!':'Status atualizado.');
+}
+
+function mostrarReagendar(id){
+  const panel=document.getElementById('reagpanel-'+id);
+  if(panel)panel.classList.toggle('open');
+}
+
+function confirmarReagendar(idOriginal, cid){
+  const novaData=document.getElementById('reag-data-'+idOriginal).value;
+  const novaHora=document.getElementById('reag-hora-'+idOriginal).value;
+  if(!novaData){showToast('Selecione a nova data.');return;}
+
+  // Marca a original como reagendada
+  const ag=DB.agenda.find(a=>a.id===idOriginal);
+  if(ag){ag.status='reagendada';ag.concluida=false;ag.reagendadaPara=novaData;}
+
+  // Cria novo agendamento na nova data
+  DB.agenda.push({
+    id:nextId.agenda++,
+    cid,
+    data:novaData,
+    hora:novaHora||ag.hora,
+    concluida:false,
+    status:'agendada',
+    reagendadaDe:idOriginal
+  });
+
+  // Vai para o mês da nova data
+  const nd=pDate(novaData);
+  if(nd){calYear=nd.getFullYear();calMonth=nd.getMonth();}
+
+  renderCal();
+  renderPainel();
+  closeModal('modal-agendamento');
+  showToast(`Reagendada para ${fmtDate(novaData)} às ${novaHora}!`);
+}
+
+function excluirAgenda(id){
+  DB.agenda=DB.agenda.filter(a=>a.id!==id);
+  renderCal();
+  renderPainel();
+  showToast('Agendamento removido.');
+}
+
+function agendarVisita(){
+  const cid=+document.getElementById('qa-cli').value;
+  const data=document.getElementById('qa-data').value;
+  const hora=document.getElementById('qa-hora').value;
+  if(!data){showToast('Selecione uma data.');return;}
+  // Verifica se já existe para esta cliente nesta data
+  const jaExiste=DB.agenda.find(a=>a.cid===cid&&a.data===data&&a.status!=='reagendada');
+  if(jaExiste){showToast('Já existe uma visita para esta cliente nesta data.');return;}
+  DB.agenda.push({id:nextId.agenda++,cid,data,hora,concluida:false,status:'agendada'});
+  // Navega para o mês do agendamento
+  const d=pDate(data);
+  if(d){calYear=d.getFullYear();calMonth=d.getMonth();}
+  renderCal();
+  renderPainel();
+  showToast(`Visita agendada — ${fmtDate(data)} às ${hora}`);
+}
+
+// ──────────────────────────────────────────────
+// REGISTRAR VISITA
+// ──────────────────────────────────────────────
+// ──────────────────────────────────────────────
+// REGISTRAR VISITA — com serviços por ambiente
+// ──────────────────────────────────────────────
+let servicoCount=0;
+let mofimPago=true;
+
+function initForm(){
+  document.getElementById('fv-cli').innerHTML=DB.clientes.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
+  if(!document.getElementById('fv-data').value)
+    document.getElementById('fv-data').value=hoje.toISOString().split('T')[0];
+  onCliChange();
+  if(!document.getElementById('fv-servicos').children.length) addServico();
+}
+
+function onCliChange(){
+  const cid=+document.getElementById('fv-cli').value;
+  const c=DB.clientes.find(x=>x.id===cid);
+  if(!c)return;
+  const nVisitas=DB.visitas.filter(v=>v.cid===cid).length;
+  const proxAg=DB.agenda.filter(a=>a.cid===cid&&a.status==='agendada').sort((a,b)=>a.data.localeCompare(b.data))[0];
+  const isAssinante=c.tipoCliente==='assinante';
+  let badge='';
+  if(isAssinante){
+    const restantes=(c.pacote||12)-nVisitas;
+    badge=`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <span class="pill p-g" style="font-size:11px">Assinante anual</span>
+      <span style="font-size:12px;color:var(--ink3)">${nVisitas}/${c.pacote||12} visitas · <strong style="color:${restantes<=2?'var(--red)':'var(--green)'}">${restantes} restantes</strong></span>
+      ${proxAg?`<span style="font-size:12px;color:var(--blue)">Próx. agendada: ${fmtDate(proxAg.data)} às ${proxAg.hora}</span>`:''}
+    </div>`;
+  } else {
+    badge=`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <span class="pill p-n" style="font-size:11px">Avulso</span>
+      <span style="font-size:12px;color:var(--ink3)">${nVisitas} visita(s) realizada(s)</span>
+    </div>`;
+  }
+  document.getElementById('fv-cli-info').innerHTML=badge;
+}
+
+function calcMofim(){
+  const qtd=+document.getElementById('fv-mofim-qtd').value||0;
+  const val=qtd*150;
+  document.getElementById('fv-mofim-valor').value=qtd>0?`R$ ${fmt(val)}`:'R$ 0,00';
+}
+
+function setMofimPago(pago){
+  mofimPago=pago;
+  document.getElementById('mofim-pago-btn').className='toggle-opt'+(pago?' active':'');
+  document.getElementById('mofim-pend-btn').className='toggle-opt pend'+(pago?'':' active');
+}
+
+const AMBIENTES=['Closet','Quarto casal','Quarto filho(a)','Sala','Cozinha','Banheiro','Escritório','Lavanderia','Garagem','Despensa','Área externa','Outro'];
+
+function addServico(){
+  const id='serv-'+servicoCount++;
+  const el=document.createElement('div');
+  el.id=id;
+  el.style.cssText='background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:.875rem;margin-bottom:8px;position:relative';
+  el.innerHTML=`
+    <button onclick="document.getElementById('${id}').remove()" style="position:absolute;top:8px;right:8px;background:none;border:none;cursor:pointer;font-size:16px;color:var(--ink3);line-height:1">×</button>
+    <div class="form-grid" style="margin-bottom:8px">
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Ambiente</label>
+        <select class="form-select serv-amb" style="font-size:13px">
+          ${AMBIENTES.map(a=>`<option>${a}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">Amb. personalizado</label>
+        <input type="text" class="form-input serv-amb-custom" placeholder="ou escreva aqui..." style="font-size:13px">
+      </div>
+    </div>
+    <div class="form-group" style="margin:0">
+      <label class="form-label">Descrição dos serviços realizados</label>
+      <textarea class="form-textarea serv-desc" placeholder="Detalhe o que foi feito neste ambiente..." style="min-height:60px;font-size:13px"></textarea>
+    </div>`;
+  document.getElementById('fv-servicos').appendChild(el);
+}
+
+function coletarServicos(){
+  const servicos=[];
+  document.querySelectorAll('#fv-servicos > div').forEach(el=>{
+    const selAmb=el.querySelector('.serv-amb').value;
+    const customAmb=el.querySelector('.serv-amb-custom').value.trim();
+    const desc=el.querySelector('.serv-desc').value.trim();
+    const amb=customAmb||selAmb;
+    if(desc)servicos.push({amb,desc});
+  });
+  return servicos;
+}
+
+function salvarVisita(){
+  const cid=+document.getElementById('fv-cli').value;
+  const data=document.getElementById('fv-data').value;
+  const servicos=coletarServicos();
+  if(!servicos.length){showToast('Adicione ao menos um serviço realizado.');return;}
+  if(!data){showToast('Informe a data da visita.');return;}
+
+  const qtdMofim=+document.getElementById('fv-mofim-qtd').value||0;
+  const mofim=qtdMofim>0?{qtd:qtdMofim,valor:qtdMofim*150,pago:mofimPago}:null;
+
+  DB.visitas.push({
+    id:nextId.visita++,cid,data,servicos,mofim,
+    horas:+document.getElementById('fv-h').value||1,
+    sat:+document.getElementById('fv-sat').value,
+    obj:document.getElementById('fv-obj').value||'',
+    pend:document.getElementById('fv-pend').value||'',
+    des:document.getElementById('fv-des').value||'',
+    foto:document.getElementById('fv-foto').value||''
+  });
+
+  const agItem=DB.agenda.find(a=>a.cid===cid&&a.data===data&&a.status==='agendada');
+  if(agItem){agItem.status='realizada';agItem.concluida=true;}
+
+  limparForm();
+  renderPainel();
+  showToast('Visita registrada no histórico!');
+}
+
+function limparForm(){
+  document.getElementById('fv-servicos').innerHTML='';
+  servicoCount=0;
+  addServico();
+  ['fv-h','fv-obj','fv-pend','fv-des','fv-foto','fv-mofim-qtd'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fv-mofim-valor').value='R$ 0,00';
+  document.getElementById('fv-sat').value='5';
+  mofimPago=true;
+  setMofimPago(true);
+  onCliChange();
+}
+
+// ──────────────────────────────────────────────
+// CLIENTES
+// ──────────────────────────────────────────────
+function renderClientes(){
+  const assinantes=DB.clientes.filter(c=>c.tipoCliente==='assinante');
+  const avulsos=DB.clientes.filter(c=>c.tipoCliente!=='assinante');
+  function cardHTML(c){
+    const vs=DB.visitas.filter(x=>x.cid===c.id);
+    const n=vs.length;
+    const isAss=c.tipoCliente==='assinante';
+    const max=isAss?(c.pacote||12):null;
+    const satM=vs.length?(vs.reduce((s,v)=>s+v.sat,0)/vs.length).toFixed(1):'—';
+    const ultima=vs.slice(-1)[0];
+    const ambientes=ultima?(ultima.servicos||[]).map(s=>s.amb).join(', '):'';
+    const pct=isAss?Math.round(n/max*100):0;
+    const restantes=isAss?max-n:null;
+    const totalMofim=vs.reduce((s,v)=>s+(v.mofim?v.mofim.valor:0),0);
+    return`<div class="client-card" onclick="showCli(${c.id})" id="cc${c.id}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <div class="av" style="width:40px;height:40px;font-size:13px">${ini(c.nome)}</div>
+        <div style="flex:1;min-width:0">
+          <div class="c-name">${c.nome}</div>
+          <div class="c-type">${c.tipo}</div>
+        </div>
+        <span class="pill ${c.status==='Ativo'?'p-g':'p-n'}">${c.status}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink3);margin-bottom:${isAss?5:2}px">
+        <span>${satM!=='—'?'★ '+satM+'/5':'Sem avaliação'}</span>
+        <span style="color:${isAss&&restantes<=2?'var(--red)':'var(--ink3)'}">${isAss?n+'/'+max+' · '+restantes+' rest.':n+' visita(s)'}</span>
+      </div>
+      ${isAss?`<div class="prog-bar"><div class="prog-fill" style="width:${pct}%"></div></div>`:''}
+      <div style="display:flex;justify-content:space-between;margin-top:5px">
+        <div style="font-size:11px;color:var(--ink3)">${ultima?fmtDate(ultima.data)+(ambientes?' · '+ambientes:''):'Sem visitas'}</div>
+        ${totalMofim>0?`<div style="font-size:11px;color:#2D6B0A;font-weight:500">Mofim R$${fmt(totalMofim)}</div>`:''}
+      </div>
+    </div>`;
+  }
+  let html='';
+  if(assinantes.length){
+    html+=`<div class="p-sec-label">Assinantes anuais<span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px;color:var(--ink3);margin-left:6px">${assinantes.filter(c=>c.status==='Ativo').length} ativos</span></div>`;
+    html+=assinantes.map(cardHTML).join('');
+  }
+  if(avulsos.length){
+    html+=`<div class="p-sec-label" style="margin-top:${assinantes.length?'16px':'0'}">Clientes avulsos</div>`;
+    html+=avulsos.map(cardHTML).join('');
+  }
+  document.getElementById('cl-list').innerHTML=html;
+  document.getElementById('cl-detail').innerHTML='';
+}
+
+function showCli(id){
+  document.querySelectorAll('.client-card').forEach(c=>c.classList.remove('sel'));
+  const ccEl=document.getElementById('cc'+id);
+  if(ccEl)ccEl.classList.add('sel');
+  const c=DB.clientes.find(x=>x.id===id);
+  const vs=DB.visitas.filter(v=>v.cid===id).sort((a,b)=>b.data.localeCompare(a.data));
+  const ms=DB.metas.filter(m=>m.cid===id);
+  const pags=DB.pagamentos.filter(p=>p.cid===id);
+  const ags=DB.agenda.filter(a=>a.cid===id&&a.status==='agendada').sort((a,b)=>a.data.localeCompare(b.data));
+  const satM=vs.length?(vs.reduce((s,v)=>s+v.sat,0)/vs.length).toFixed(1):'—';
+  const totalH=vs.reduce((s,v)=>s+(+v.horas||0),0);
+  const pagPend=pags.filter(p=>!p.pago);
+  const isAss=c.tipoCliente==='assinante';
+  const max=isAss?(c.pacote||12):null;
+  const restantes=isAss?max-vs.length:null;
+  // Mofim totals
+  const mofimVendas=vs.filter(v=>v.mofim);
+  const totalMofimVal=mofimVendas.reduce((s,v)=>s+v.mofim.valor,0);
+  const totalMofimQtd=mofimVendas.reduce((s,v)=>s+v.mofim.qtd,0);
+  const mofimPend=mofimVendas.filter(v=>!v.mofim.pago).reduce((s,v)=>s+v.mofim.valor,0);
+
+  const MONTHS_S=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+  // Histórico expandível por visita com mofim
+  const histHTML=vs.length?vs.map((v,i)=>{
+    const d=pDate(v.data);
+    const servList=(v.servicos||[]).map(s=>`
+      <div style="display:flex;gap:8px;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12px">
+        <span style="min-width:80px;font-weight:500;color:var(--ink3);flex-shrink:0">${s.amb}</span>
+        <span style="color:var(--ink);line-height:1.4">${s.desc}</span>
+      </div>`).join('');
+    const mofimBadge=v.mofim?`<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;margin-top:8px;padding:8px 10px;background:#EBF5E0;border-radius:var(--r-sm);border-left:3px solid #4A8C1C">
+      <span style="font-size:12px;color:#2D4A1E"><strong>Mofim:</strong> ${v.mofim.qtd} cx · R$ ${fmt(v.mofim.valor)}</span>
+      <span class="pill ${v.mofim.pago?'p-g':'p-r'}" style="font-size:10px">${v.mofim.pago?'Pago':'A receber'}</span>
+    </div>`:'';
+    return`<div style="border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:8px;overflow:hidden">
+      <div onclick="var b=this.nextElementSibling;b.style.display=b.style.display==='none'?'block':'none';this.querySelector('.varr').style.transform=b.style.display!=='none'?'rotate(180deg)':''" style="display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;background:var(--bg2)">
+        <div style="min-width:38px;text-align:center;background:var(--white);border-radius:6px;padding:5px 4px;border:1px solid var(--border)">
+          <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:500;color:var(--ink);line-height:1">${d?d.getDate():'—'}</div>
+          <div style="font-size:9px;color:var(--ink3);text-transform:uppercase">${d?MONTHS_S[d.getMonth()]:'—'}</div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${(v.servicos||[]).map(s=>s.amb).join(' · ')||'Visita '+(vs.length-i)}</div>
+          <div style="font-size:11px;color:var(--ink3);display:flex;gap:8px;flex-wrap:wrap">
+            <span>${v.horas}h · ${'★'.repeat(v.sat)}${'☆'.repeat(5-v.sat)}</span>
+            ${v.mofim?`<span style="color:#2D6B0A">Mofim ${v.mofim.qtd}cx · R$${fmt(v.mofim.valor)}</span>`:''}
+          </div>
+        </div>
+        <svg class="varr" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--ink3);flex-shrink:0;transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div style="display:none;padding:10px 12px;border-top:1px solid var(--border)">
+        ${v.obj?`<div style="font-size:12px;color:var(--ink3);margin-bottom:8px;padding-bottom:8px;border-bottom:0.5px solid var(--border)"><strong>Objetivo:</strong> ${v.obj}</div>`:''}
+        ${servList}
+        ${v.des?`<div style="margin-top:8px;font-size:12px;color:var(--ink3)"><strong>Desafios:</strong> ${v.des}</div>`:''}
+        ${v.pend?`<div style="margin-top:8px;padding:8px;background:var(--amber-bg);border-radius:var(--r-sm);font-size:12px;color:var(--amber)">
+          <div style="font-weight:500;margin-bottom:3px">Pendência:</div>
+          <div id="cpend-txt-${v.id}" style="line-height:1.4">${v.pend}</div>
+          <div id="cpend-edit-${v.id}" style="display:none;margin-top:5px">
+            <textarea style="width:100%;padding:6px 8px;border:1px solid #E8C870;border-radius:var(--r-sm);font-size:12px;font-family:'Outfit',sans-serif;color:var(--ink);background:#fff;resize:none;min-height:44px" id="cpend-input-${v.id}">${v.pend}</textarea>
+            <div style="display:flex;gap:5px;margin-top:4px">
+              <button onclick="salvarPend(${v.id});showCli(${id})" style="padding:4px 10px;background:var(--gold);border:none;border-radius:var(--r-sm);color:var(--ink);font-size:11px;font-weight:500;cursor:pointer;font-family:'Outfit',sans-serif">Salvar</button>
+              <button onclick="document.getElementById('cpend-edit-${v.id}').style.display='none';document.getElementById('cpend-txt-${v.id}').style.display='block'" style="padding:4px 10px;background:none;border:1px solid #E8C870;border-radius:var(--r-sm);color:var(--amber);font-size:11px;cursor:pointer;font-family:'Outfit',sans-serif">Cancelar</button>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:5px">
+            <button onclick="resolverPend(${v.id});showCli(${id})" style="font-size:11px;color:var(--green);background:var(--green-bg);border:1px solid #A8D9C0;border-radius:99px;padding:2px 9px;cursor:pointer;font-family:'Outfit',sans-serif">✓ Resolver</button>
+            <button onclick="document.getElementById('cpend-txt-${v.id}').style.display='none';document.getElementById('cpend-edit-${v.id}').style.display='block';document.getElementById('cpend-input-${v.id}').focus()" style="font-size:11px;color:var(--amber);background:none;border:1px solid #E8C870;border-radius:99px;padding:2px 9px;cursor:pointer;font-family:'Outfit',sans-serif">Editar</button>
+          </div>
+        </div>`:''}
+
+        ${mofimBadge}
+        ${v.foto?`<div style="margin-top:8px;font-size:12px"><a href="${v.foto}" target="_blank" style="color:var(--blue)">Ver fotos →</a></div>`:''}
+      </div>
+    </div>`;
+  }).join(''):'<div style="font-size:13px;color:var(--ink3)">Sem visitas registradas ainda.</div>';
+
+  document.getElementById('cl-detail').innerHTML=`<div class="detail-panel">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border)">
+      <div class="av" style="width:48px;height:48px;font-size:16px">${ini(c.nome)}</div>
+      <div style="flex:1">
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:500;color:var(--ink)">${c.nome}</div>
+        <div style="font-size:12px;color:var(--ink3)">${c.tipo}${c.tel?' · '+c.tel:''}</div>
+        <div style="margin-top:5px;display:flex;gap:5px;flex-wrap:wrap">
+          <span class="pill ${c.status==='Ativo'?'p-g':'p-n'}" style="font-size:10px">${c.status}</span>
+          <span class="pill ${isAss?'p-a':'p-n'}" style="font-size:10px">${isAss?'Assinante anual':'Avulso'}</span>
+          ${c.inicio?`<span style="font-size:11px;color:var(--ink3)">desde ${fmtDate(c.inicio)}</span>`:''}
+        </div>
+      </div>
+    </div>
+
+    <div class="metrics" style="grid-template-columns:repeat(${isAss?4:3},1fr);margin-bottom:1rem">
+      ${isAss?`<div class="metric m-gold"><div class="metric-label">Visitas</div><div class="metric-val">${vs.length}/${max}</div><div class="metric-sub" style="color:${restantes<=2?'var(--red)':'inherit'}">${restantes} restantes</div></div>`:''}
+      <div class="metric m-gold"><div class="metric-label">Satisfação</div><div class="metric-val">${satM}</div><div class="metric-sub">média</div></div>
+      <div class="metric"><div class="metric-label">Horas</div><div class="metric-val">${totalH}h</div><div class="metric-sub">total</div></div>
+      <div class="metric ${pagPend.length?'m-red':'m-green'}"><div class="metric-label">Pagamento</div><div class="metric-val" style="font-size:16px">${pagPend.length?pagPend.length+' pend.':'Em dia'}</div></div>
+    </div>
+
+    ${totalMofimVal>0?`<div style="background:#EBF5E0;border:1px solid #A8D980;border-radius:var(--r);padding:.875rem 1rem;margin-bottom:1rem">
+      <div style="font-size:11px;font-weight:600;color:#2D4A1E;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Histórico Mofim</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        <div><div style="font-size:10px;color:#4A7020;text-transform:uppercase;letter-spacing:.4px">Total vendido</div><div style="font-size:20px;font-weight:500;color:#2D4A1E">${totalMofimQtd} cx</div></div>
+        <div><div style="font-size:10px;color:#4A7020;text-transform:uppercase;letter-spacing:.4px">Receita</div><div style="font-size:20px;font-weight:500;color:#2D4A1E">R$${fmt(totalMofimVal)}</div></div>
+        <div><div style="font-size:10px;color:${mofimPend>0?'#8B3A0A':'#4A7020'};text-transform:uppercase;letter-spacing:.4px">A receber</div><div style="font-size:20px;font-weight:500;color:${mofimPend>0?'var(--red)':'#2D4A1E'}">${mofimPend>0?'R$'+fmt(mofimPend):'Quitado'}</div></div>
+      </div>
+    </div>`:''}
+
+    ${isAss?`<div class="p-sec-label">Uso do pacote (${vs.length}/${max})</div>
+    <div style="margin-bottom:14px"><div style="display:flex;gap:3px;flex-wrap:wrap;margin-bottom:5px">${Array.from({length:max},(_,i)=>`<div style="width:18px;height:18px;border-radius:4px;${i<vs.length?'background:var(--gold);border:1px solid var(--gold3)':'background:var(--bg3);border:1px solid var(--border)'}"></div>`).join('')}</div><div class="prog-bar"><div class="prog-fill" style="width:${Math.round(vs.length/max*100)}%"></div></div></div>`:''}
+
+    ${ags.length?`<div class="p-sec-label">Próximos agendamentos</div><div style="margin-bottom:12px">${ags.map(a=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:13px"><span>${fmtDateLong(a.data)}</span><span style="color:var(--ink3)">${a.hora}</span></div>`).join('')}</div>`:''}
+
+    <div class="p-sec-label">Histórico de visitas</div>
+    ${histHTML}
+
+    ${ms.length?`<div class="p-sec-label" style="margin-top:12px">Metas</div>${ms.map(m=>`<div class="irow"><span class="ik">${m.meta}</span><span class="pill ${m.status==='Concluído'?'p-g':m.pri==='Alta'?'p-r':'p-a'}">${m.status}</span></div>`).join('')}`:''}
+
+    <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-gold btn-sm" style="flex:1" onclick="go('visita',document.getElementById('tab-visita'));setTimeout(()=>{document.getElementById('fv-cli').value=${id};onCliChange();},80)">+ Registrar visita</button>
+      <button class="btn btn-whats btn-sm" style="flex:1" onclick="waRapido(${id},'resumo')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Resumo WA
+      </button>
+    </div>
+  </div>`;
+  setTimeout(()=>document.getElementById('cl-detail').scrollIntoView({behavior:'smooth',block:'nearest'}),60);
+}
+
+function salvarCliente(){
+  const nome=document.getElementById('nc-nome').value.trim();
+  if(!nome){showToast('Informe o nome da cliente.');return;}
+  const pacoteVal=document.getElementById('nc-pacote').value;
+  const c={
+    id:nextId.cli++,
+    nome,
+    tel:document.getElementById('nc-tel').value.replace(/\D/g,''),
+    tipo:document.getElementById('nc-tipo').value,
+    tipoCliente:pacoteVal==='avulso'?'avulso':'assinante',
+    pacote:pacoteVal==='avulso'?0:+pacoteVal,
+    valor:+document.getElementById('nc-valor').value||780,
+    inicio:document.getElementById('nc-inicio').value,
+    status:'Ativo',
+    obs:document.getElementById('nc-obs').value
+  };
+  DB.clientes.push(c);
+  ['nc-nome','nc-tel','nc-obs','nc-inicio'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('nc-valor').value='780';
+  closeModal('modal-new-client');
+  renderClientes();
+  popularSelects();
+  showToast(`${nome} cadastrada com sucesso!`);
+}
+
+// ──────────────────────────────────────────────
+// PENDÊNCIAS — editar e resolver
+// ──────────────────────────────────────────────
+function resolverPend(visitaId){
+  const v=DB.visitas.find(x=>x.id===visitaId);
+  if(!v)return;
+  v.pend='';
+  renderPainel();
+  showToast('Pendência marcada como resolvida!');
+}
+
+function editarPend(visitaId){
+  document.getElementById('pend-txt-'+visitaId).style.display='none';
+  const editEl=document.getElementById('pend-edit-'+visitaId);
+  if(editEl){editEl.style.display='block';editEl.querySelector('textarea').focus();}
+}
+
+function cancelarPend(visitaId){
+  const v=DB.visitas.find(x=>x.id===visitaId);
+  document.getElementById('pend-edit-'+visitaId).style.display='none';
+  document.getElementById('pend-txt-'+visitaId).style.display='block';
+  if(v)document.getElementById('pend-input-'+visitaId).value=v.pend;
+}
+
+function salvarPend(visitaId){
+  const v=DB.visitas.find(x=>x.id===visitaId);
+  if(!v)return;
+  const novoTexto=document.getElementById('pend-input-'+visitaId).value.trim();
+  v.pend=novoTexto;
+  renderPainel();
+  showToast(novoTexto?'Pendência atualizada!':'Pendência removida.');
+}
+
+function editarCliente(id){
+  showToast('Edição em breve — use cadastrar nova cliente para duplicar.');
+}
+
+// ──────────────────────────────────────────────
+// FINANCEIRO / PAGAMENTOS
+// ──────────────────────────────────────────────
+function renderFinanceiro(){
+  // Serviços (pacotes/visitas)
+  const totalServ=DB.pagamentos.reduce((s,p)=>s+p.valor,0);
+  const pagoServ=DB.pagamentos.filter(p=>p.pago).reduce((s,p)=>s+p.valor,0);
+  const pendServ=DB.pagamentos.filter(p=>!p.pago).reduce((s,p)=>s+p.valor,0);
+  // Mofim
+  const totalMofim=DB.visitas.reduce((s,v)=>s+(v.mofim?v.mofim.valor:0),0);
+  const pagoMofim=DB.visitas.filter(v=>v.mofim&&v.mofim.pago).reduce((s,v)=>s+v.mofim.valor,0);
+  const pendMofim=DB.visitas.filter(v=>v.mofim&&!v.mofim.pago).reduce((s,v)=>s+v.mofim.valor,0);
+  const totalCxMofim=DB.visitas.reduce((s,v)=>s+(v.mofim?v.mofim.qtd:0),0);
+  // Grand total
+  const grandTotal=totalServ+totalMofim;
+  const grandPago=pagoServ+pagoMofim;
+  const grandPend=pendServ+pendMofim;
+
+  document.getElementById('fin-metrics').innerHTML=`
+    <div class="metric m-gold"><div class="metric-label">Receita total</div><div class="metric-val">R$${fmt(grandTotal)}</div><div class="metric-sub">serviços + Mofim</div></div>
+    <div class="metric m-green"><div class="metric-label">Recebido</div><div class="metric-val">R$${fmt(grandPago)}</div><div class="metric-sub">confirmado</div></div>
+    <div class="metric ${grandPend>0?'m-red':'m-green'}"><div class="metric-label">A receber</div><div class="metric-val">R$${fmt(grandPend)}</div><div class="metric-sub">${grandPend>0?'pendente':'quitado'}</div></div>
+    <div class="metric"><div class="metric-label">Clientes ativos</div><div class="metric-val">${DB.clientes.filter(c=>c.status==='Ativo').length}</div><div class="metric-sub">cadastrados</div></div>`;
+
+  // Bloco separado Serviços vs Mofim
+  const splitHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:.875rem">
+      <div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Serviços (pacotes / visitas)</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:500;color:var(--gold)">R$${fmt(totalServ)}</div>
+      <div style="font-size:12px;color:var(--green);margin-top:4px">Recebido: R$${fmt(pagoServ)}</div>
+      <div style="font-size:12px;color:${pendServ>0?'var(--red)':'var(--ink3)'}">Pendente: R$${fmt(pendServ)}</div>
+    </div>
+    <div style="background:#EBF5E0;border:1px solid #A8D980;border-radius:var(--r);padding:.875rem">
+      <div style="font-size:10px;font-weight:600;color:#2D4A1E;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Mofim (produto)</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:500;color:#2D6B0A">R$${fmt(totalMofim)}</div>
+      <div style="font-size:12px;color:var(--green);margin-top:4px">${totalCxMofim} caixas vendidas</div>
+      <div style="font-size:12px;color:${pendMofim>0?'var(--red)':'#4A7020'}">Pendente: ${pendMofim>0?'R$'+fmt(pendMofim):'Quitado'}</div>
+    </div>
+  </div>`;
+
+  // Lista por cliente
+  let html=splitHTML;
+  DB.clientes.filter(c=>c.status==='Ativo').forEach(c=>{
+    const pags=DB.pagamentos.filter(p=>p.cid===c.id);
+    const pend=pags.filter(p=>!p.pago);
+    const mofimVs=DB.visitas.filter(v=>v.cid===c.id&&v.mofim);
+    const mofimPendVal=mofimVs.filter(v=>!v.mofim.pago).reduce((s,v)=>s+v.mofim.valor,0);
+    const totalMofimC=mofimVs.reduce((s,v)=>s+v.mofim.valor,0);
+    html+=`<div class="pag-card">
+      <div class="pag-header">
+        <div>
+          <div class="pag-nome">${c.nome.split(' ').slice(0,2).join(' ')}</div>
+          <div class="pag-info">${c.tipoCliente==='assinante'?'Assinante · '+(c.pacote||12)+' visitas · R$'+fmt(c.valor||780)+'/mês':'Avulso'}${totalMofimC>0?' · Mofim R$'+fmt(totalMofimC):''}
+          </div>
+        </div>
+        <span class="pill ${(pend.length||mofimPendVal>0)?'p-r':'p-g'}">${(pend.length||mofimPendVal>0)?'Pendente':'Em dia'}</span>
+      </div>
+      <div>
+        ${pags.slice(-3).map(p=>`<div class="irow" style="font-size:12px">
+          <span class="ik">${p.mes}</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="color:var(--ink3);font-size:11px">R$ ${fmt(p.valor)}</span>
+            <div class="toggle-pago">
+              <button class="toggle-opt ${p.pago?'active':''}" onclick="togglePag(${p.id},true)">Pago</button>
+              <button class="toggle-opt pend ${!p.pago?'active':''}" onclick="togglePag(${p.id},false)">Pend.</button>
+            </div>
+            ${!p.pago?`<button class="btn btn-whats btn-sm" style="padding:5px 10px;font-size:11px" onclick="waCobranca(${c.id},'${p.mes}',${p.valor},'${p.vencimento}')">WA</button>`:''}
+          </div>
+        </div>`).join('')}
+        ${mofimVs.length?`<div style="margin-top:6px;padding:6px 0;border-top:0.5px dashed var(--border)">
+          ${mofimVs.map(v=>`<div class="irow" style="font-size:12px">
+            <span class="ik" style="color:#4A7020">${fmtDate(v.data)} · ${v.mofim.qtd}cx Mofim</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span style="color:#2D4A1E;font-weight:500">R$${fmt(v.mofim.valor)}</span>
+              <div class="toggle-pago">
+                <button class="toggle-opt ${v.mofim.pago?'active':''}" onclick="toggleMofimPag(${v.id},true)">Pago</button>
+                <button class="toggle-opt pend ${!v.mofim.pago?'active':''}" onclick="toggleMofimPag(${v.id},false)">Pend.</button>
+              </div>
+            </div>
+          </div>`).join('')}
+        </div>`:''}
+      </div>
+      <div class="pag-actions">
+        <button class="btn btn-outline btn-sm" onclick="addMesPag(${c.id})">+ Novo mês</button>
+        <button class="btn btn-whats btn-sm" onclick="waRapido(${c.id},'cobranca')">Cobrar via WA</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('fin-list').innerHTML=html;
+
+  const wasel=document.getElementById('wa-cli');
+  wasel.innerHTML=DB.clientes.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
+  previewWA();
+}
+
+function togglePag(pagId,pago){
+  const p=DB.pagamentos.find(x=>x.id===pagId);
+  if(p){
+    p.pago=pago;
+    if(pago&&!p.dataPag)p.dataPag=hoje.toISOString().split('T')[0];
+    renderFinanceiro();
+    showToast(pago?'Pagamento confirmado!':'Marcado como pendente.');
+  }
+}
+
+function addMesPag(cid){
+  const meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const c=DB.clientes.find(x=>x.id===cid);
+  const prox=new Date(hoje.getFullYear(),hoje.getMonth()+1,10);
+  const mes=`${meses[prox.getMonth()]}/${prox.getFullYear()}`;
+  const jaExiste=DB.pagamentos.find(p=>p.cid===cid&&p.mes===mes);
+  if(jaExiste){showToast('Este mês já existe para essa cliente.');return;}
+  DB.pagamentos.push({
+    id:nextId.pag++,cid,mes,
+    valor:c.valor||780,
+    vencimento:`${prox.getFullYear()}-${String(prox.getMonth()+1).padStart(2,'0')}-10`,
+    pago:false,dataPag:''
+  });
+  renderFinanceiro();
+  showToast(`Mês ${mes} adicionado.`);
+}
+
+function toggleMofimPag(visitaId, pago){
+  const v=DB.visitas.find(x=>x.id===visitaId);
+  if(v&&v.mofim){v.mofim.pago=pago;renderFinanceiro();showToast(pago?'Mofim marcado como pago!':'Marcado como pendente.');}
+}
+
+// ──────────────────────────────────────────────
+// WHATSAPP
+// ──────────────────────────────────────────────
+function gerarMensagem(cid,tipo,extra={}){
+  const c=DB.clientes.find(x=>x.id===cid);
+  if(!c)return'';
+  const fn=c.nome.split(' ')[0];
+  const vs=DB.visitas.filter(v=>v.cid===cid).sort((a,b)=>b.data.localeCompare(a.data));
+  const ultima=vs[0];
+  const prox=DB.agenda.filter(a=>a.cid===cid&&a.status==='agendada').sort((a,b)=>a.data.localeCompare(b.data))[0];
+
+  if(tipo==='cobranca'){
+    const mes=extra.mes||'este mês';
+    const val=extra.valor||c.valor||780;
+    const venc=extra.vencimento?fmtDate(extra.vencimento):'dia 10';
+    return`Olá, ${fn}! 😊
+
+Tudo bem com você?
+
+Segue o lembrete amigável sobre o pagamento referente a *${mes}* do seu pacote Marthinha Sol.
+
+💰 *Valor:* R$ ${fmt(val)}
+📅 *Vencimento:* ${venc}
+
+Quando quiser, pode me avisar para eu confirmar o recebimento.
+
+Obrigada pela confiança, ${fn}! 🌟`;
+  }
+
+  if(tipo==='resumo'&&ultima){
+    const ambientes=(ultima.servicos||[]).map(s=>s.amb).join(', ')||'—';
+    const servDesc=(ultima.servicos||[]).map(s=>`   • *${s.amb}:* ${s.desc}`).join('\n');
+    const mofimLine=ultima.mofim?`\n🌿 *Mofim vendido:* ${ultima.mofim.qtd} caixa(s) — R$ ${fmt(ultima.mofim.valor)} ${ultima.mofim.pago?'(pago)':'(aguardando pagamento)'}`:'';
+    return`Olá, ${fn}! ✨
+
+Segue o resumo da nossa visita de ${ultima.data?fmtDate(ultima.data):'hoje'}:
+
+🏡 *Ambientes atendidos:* ${ambientes}
+⏱ *Duração:* ${ultima.horas}h
+${'⭐'.repeat(ultima.sat)} *Sua avaliação:* ${ultima.sat}/5
+
+*O que foi feito:*
+${servDesc}
+${ultima.pend?`\n⏳ *Próximos passos:* ${ultima.pend}`:''}${mofimLine}
+${prox?`\n📆 *Próxima visita:* ${fmtDateLong(prox.data)} às ${prox.hora}`:''}
+
+Foi um prazer cuidar do seu lar! 🌸
+*Marthinha Sol*`;
+  }
+
+  if(tipo==='agendamento'){
+    const data=extra.data?fmtDateLong(extra.data):'em breve';
+    const hora=extra.hora||'';
+    return`Olá, ${fn}! 📅
+
+Sua visita Marthinha Sol está confirmada:
+
+📍 *Data:* ${data}
+🕗 *Horário:* ${hora}
+🏡 *Local:* ${c.tipo}
+
+Se precisar reagendar, me avise com antecedência, tá bem?
+
+Até lá! 🌸`;
+  }
+
+  if(tipo==='motivacional'){
+    return`Olá, ${fn}! 🌟
+
+Só passando para te lembrar que um espaço organizado traz leveza para a sua vida inteira ✨
+
+Estamos juntas nessa jornada de cuidar do seu lar com carinho e profissionalismo.
+
+${prox?`Nos vemos em breve, em ${fmtDate(prox.data)}! 😊`:' Logo nos vemos! 😊'}
+
+Com carinho,
+*Marthinha Sol* 🏡`;
+  }
+
+  return`Olá, ${fn}! Tudo bem? Sou a Marthinha Sol. Qualquer dúvida estou à disposição! 😊`;
+}
+
+function previewWA(){
+  const cid=+document.getElementById('wa-cli').value;
+  const tipo=document.getElementById('wa-tipo').value;
+  document.getElementById('wa-preview').textContent=gerarMensagem(cid,tipo);
+}
+
+function enviarWA(){
+  const cid=+document.getElementById('wa-cli').value;
+  const tipo=document.getElementById('wa-tipo').value;
+  const msg=gerarMensagem(cid,tipo);
+  const tel=cTel(cid);
+  const url=`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`;
+  window.open(url,'_blank');
+}
+
+function waRapido(cid,tipo){
+  const msg=gerarMensagem(cid,tipo);
+  const tel=cTel(cid);
+  const url=`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`;
+  window.open(url,'_blank');
+}
+
+function waCobranca(cid,mes,valor,vencimento){
+  const msg=gerarMensagem(cid,'cobranca',{mes,valor,vencimento});
+  const tel=cTel(cid);
+  const url=`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`;
+  window.open(url,'_blank');
+}
+
+function enviarConfirmacaoWA(cid,data,hora){
+  const msg=gerarMensagem(cid,'agendamento',{data,hora});
+  const tel=cTel(cid);
+  const url=`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`;
+  window.open(url,'_blank');
+  closeModal('modal-agendamento');
+}
+
+// ──────────────────────────────────────────────
+// POPULAR SELECTS GLOBAIS
+// ──────────────────────────────────────────────
+function popularSelects(){
+  const opts=DB.clientes.map(c=>`<option value="${c.id}">${c.nome.split(' ').slice(0,2).join(' ')}</option>`).join('');
+  ['fv-cli','qa-cli','wa-cli'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.innerHTML=opts;
+  });
+}
+
+// ──────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────
+popularSelects();
+
+// Abre no mês mais próximo que tem visitas agendadas
+(function(){
+  const proxima=DB.agenda
+    .filter(a=>a.status==='agendada')
+    .map(a=>({...a,d:new Date(a.data+'T00:00:00')}))
+    .filter(a=>a.d>=hoje)
+    .sort((a,b)=>a.d-b.d)[0];
+
+  if(proxima){
+    calYear=proxima.d.getFullYear();
+    calMonth=proxima.d.getMonth();
+  } else {
+    const now=new Date();
+    calYear=now.getFullYear()===2026?now.getFullYear():2026;
+    calMonth=now.getFullYear()===2026?now.getMonth():1;
+  }
+  document.getElementById('qa-data').value=`${calYear}-${String(calMonth+1).padStart(2,'0')}-01`;
+})();
+
+renderPainel();
+
+</script>
+</body>
+</html>
